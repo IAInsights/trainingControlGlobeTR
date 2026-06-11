@@ -1,0 +1,1646 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ConfDope — Training</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600;700&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+:root{
+  --ink:#111318;--ink2:#3c4049;--ink3:#6b7280;
+  --line:#e2e4e9;--line2:#f0f1f4;--bg:#f7f8fa;--white:#fff;
+  --blue:#1a56db;--blue-d:#1240b0;--blue-l:#eff4ff;--blue-ll:#dce8ff;
+  --green:#0e7e4a;--green-l:#edfaf3;--green-ll:#dcfce7;--green-lll:#f0fdf4;
+  --amber:#92510c;--amber-l:#fef7e0;--amber-b:#d97706;
+  --red:#b91c1c;--red-l:#fef2f2;
+  --purple:#5b21b6;--purple-d:#4c1d95;--purple-l:#f5f3ff;--purple-ll:#ede9fe;--purple-v:#7c3aed;
+  --r:7px;--shadow-sm:0 1px 3px rgba(0,0,0,.08);--shadow:0 2px 10px rgba(0,0,0,.10);--shadow-lg:0 8px 32px rgba(0,0,0,.14);
+}
+body{font-family:'DM Sans',sans-serif;font-size:13px;color:var(--ink);background:var(--bg);height:100vh;display:flex;flex-direction:column;overflow:hidden;}
+
+/* HEADER */
+.hdr{background:var(--ink);color:#fff;height:50px;display:flex;align-items:center;padding:0 20px;flex-shrink:0;gap:4px;}
+.hdr-logo{font-size:15px;font-weight:700;margin-right:20px;display:flex;align-items:center;gap:8px;}
+.hdr-badge{background:var(--purple);color:#fff;font-size:9px;font-weight:700;padding:2px 6px;border-radius:3px;letter-spacing:.06em;text-transform:uppercase;}
+.tab-btn{height:34px;padding:0 14px;background:transparent;border:none;color:rgba(255,255,255,.55);font-family:inherit;font-size:12.5px;font-weight:500;cursor:pointer;border-radius:5px;transition:all .15s;}
+.tab-btn:hover{background:rgba(255,255,255,.1);color:rgba(255,255,255,.85);}
+.tab-btn.active{background:rgba(255,255,255,.15);color:#fff;font-weight:600;}
+.hdr-right{margin-left:auto;}
+.hdr-home{width:30px;height:30px;background:rgba(255,255,255,.1);border-radius:50%;border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;}
+.hdr-home:hover{background:rgba(255,255,255,.22);}
+.hdr-home svg{width:16px;height:16px;fill:#fff;}
+.page{display:none;flex:1;overflow:hidden;}
+.page.active{display:flex;}
+
+/* DASHBOARD */
+.dash-wrap{flex:1;overflow-y:auto;background:var(--bg);padding:28px;}
+.dash-inner{max-width:1100px;margin:0 auto;}
+.dash-top{display:flex;align-items:flex-end;justify-content:space-between;margin-bottom:24px;}
+.dash-heading{font-size:22px;font-weight:700;}
+.dash-sub{font-size:12.5px;color:var(--ink3);margin-top:4px;}
+.dash-new-btn{display:inline-flex;align-items:center;gap:7px;padding:10px 20px;background:var(--purple);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:13px;font-weight:600;cursor:pointer;}
+.dash-new-btn:hover{background:var(--purple-d);}
+.kpi-row{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:20px;}
+.kpi{background:var(--white);border-radius:10px;padding:16px 18px;box-shadow:var(--shadow-sm);border-top:3px solid transparent;}
+.kpi.purple{border-top-color:var(--purple);}
+.kpi.green{border-top-color:var(--green);}
+.kpi.amber{border-top-color:var(--amber-b);}
+.kpi.blue{border-top-color:var(--blue);}
+.kpi-val{font-size:30px;font-weight:800;line-height:1;margin-bottom:4px;}
+.kpi.purple .kpi-val{color:var(--purple);}
+.kpi.green .kpi-val{color:var(--green);}
+.kpi.amber .kpi-val{color:var(--amber);}
+.kpi.blue .kpi-val{color:var(--blue);}
+.kpi-lbl{font-size:11.5px;font-weight:600;color:var(--ink3);}
+.kpi-sub{font-size:10.5px;color:var(--ink3);margin-top:2px;opacity:.7;}
+.charts-row{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:12px;}
+.chart-card{background:var(--white);border-radius:10px;padding:18px 20px;box-shadow:var(--shadow-sm);}
+.chart-card-title{font-size:11px;font-weight:700;color:var(--ink2);text-transform:uppercase;letter-spacing:.06em;margin-bottom:14px;}
+.bar-row{display:flex;align-items:center;gap:10px;margin-bottom:7px;}
+.bar-lbl{font-size:11.5px;color:var(--ink2);min-width:130px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.bar-track{flex:1;height:13px;background:var(--line2);border-radius:20px;overflow:hidden;}
+.bar-fill{height:100%;border-radius:20px;}
+.bar-num{font-size:11px;font-weight:700;color:var(--ink3);min-width:22px;text-align:right;}
+.act-table{width:100%;border-collapse:collapse;background:var(--white);border-radius:10px;overflow:hidden;box-shadow:var(--shadow-sm);}
+.act-table thead th{padding:8px 12px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);background:var(--bg);border-bottom:2px solid var(--line);}
+.act-table td{padding:9px 12px;border-bottom:1px solid var(--line2);font-size:12px;}
+.act-table tr:last-child td{border-bottom:none;}
+.act-table tr{cursor:pointer;transition:background .12s;}
+.act-table tr:hover td{background:var(--purple-ll);}
+
+/* ENTRY FORM */
+.ef-layout{display:flex;flex:1;overflow:hidden;}
+.ef-sidebar{width:272px;background:var(--white);border-right:1px solid var(--line);display:flex;flex-direction:column;flex-shrink:0;}
+.ef-sb-top{padding:12px;}
+.ef-search{display:flex;align-items:center;border:1px solid var(--line);border-radius:var(--r);padding:0 10px;height:34px;background:var(--bg);gap:8px;margin-bottom:8px;}
+.ef-search input{border:none;background:transparent;outline:none;font-family:inherit;font-size:13px;flex:1;}
+.ef-search svg{width:14px;height:14px;fill:var(--ink3);}
+.btn-new-rec{display:flex;align-items:center;gap:6px;width:100%;padding:8px 10px;background:none;border:none;cursor:pointer;color:var(--purple);font-family:inherit;font-size:13px;font-weight:600;border-radius:var(--r);}
+.btn-new-rec:hover{background:var(--purple-l);}
+.ef-list{flex:1;overflow-y:auto;}
+.ef-li{padding:10px 14px;border-bottom:1px solid var(--line2);cursor:pointer;}
+.ef-li:hover{background:var(--bg);}
+.ef-li.sel{background:var(--purple-l);border-left:3px solid var(--purple);}
+.ef-li-title{font-size:12.5px;font-weight:600;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ef-li-sub{font-size:11px;color:var(--ink3);margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ef-li-dates{font-size:10.5px;color:var(--ink3);margin-top:3px;}
+.ef-li.cur{background:var(--green-lll);}
+.ef-li.cur .ef-li-title{color:var(--green);}
+.ef-li.cur.sel{background:var(--green-ll);border-left-color:var(--green);}
+.ef-empty-li{padding:20px;text-align:center;color:var(--ink3);font-size:12px;}
+.ef-panel{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--white);}
+.ef-landing{flex:1;overflow-y:auto;background:var(--bg);padding:28px 32px;}
+.ef-toolbar{height:46px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 16px;gap:6px;flex-shrink:0;}
+.tb-btn{width:32px;height:32px;display:flex;align-items:center;justify-content:center;border:none;background:none;cursor:pointer;border-radius:var(--r);}
+.tb-btn:hover{background:var(--line2);}
+.tb-btn.save svg{fill:var(--green);}
+.tb-btn.cancel svg{fill:var(--red);}
+.tb-btn svg{width:19px;height:19px;}
+.ef-tb-title{margin-left:6px;font-size:13px;color:var(--ink3);font-weight:500;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.badge{padding:3px 9px;border-radius:20px;font-size:10.5px;font-weight:700;text-transform:uppercase;}
+.badge.new-b{background:var(--green-l);color:var(--green);}
+.badge.exist-b{background:var(--line2);color:var(--ink3);}
+.ef-fb{flex:1;overflow-y:auto;padding:20px 24px;}
+.f-section{margin-bottom:22px;}
+.f-sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--blue);margin-bottom:12px;padding-bottom:6px;border-bottom:2px solid var(--blue-l);}
+.f-sec-title.purple{color:var(--purple);border-bottom-color:var(--purple-l);}
+.f-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px 22px;}
+.f-grid.cols3{grid-template-columns:1fr 1fr 1fr;}
+.fg{display:flex;flex-direction:column;gap:5px;}
+.fg.full{grid-column:1/-1;}
+.fg label{font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;display:flex;align-items:center;gap:6px;}
+.fi{height:34px;padding:0 10px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:13px;color:var(--ink);background:var(--white);outline:none;width:100%;transition:border-color .15s;}
+.fi:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(26,86,219,.09);}
+textarea.fi{height:68px;padding:8px 10px;resize:vertical;line-height:1.5;}
+select.fi{cursor:pointer;appearance:none;background:var(--white) url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6'%3E%3Cpath d='M0 0l5 6 5-6z' fill='%236b7280'/%3E%3C/svg%3E") no-repeat right 10px center;}
+.yn-row{display:flex;gap:8px;margin-top:2px;}
+.yn-btn{padding:5px 16px;border-radius:20px;border:1.5px solid var(--line);background:var(--white);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink3);}
+.yn-btn.y{background:var(--green-l);border-color:var(--green);color:var(--green);}
+.yn-btn.n{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.yn-btn.p{background:var(--purple-l);border-color:var(--purple);color:var(--purple);}
+.lbl-add{margin-left:auto;display:inline-flex;align-items:center;gap:3px;padding:2px 7px;background:var(--purple-l);color:var(--purple);border:none;border-radius:3px;font-family:inherit;font-size:10px;font-weight:700;cursor:pointer;}
+
+/* DROPDOWNS */
+.msw{position:relative;}
+.mst{min-height:34px;padding:3px 28px 3px 8px;border:1px solid var(--line);border-radius:var(--r);background:var(--white);cursor:pointer;display:flex;flex-wrap:wrap;gap:4px;align-items:center;position:relative;transition:border-color .15s;user-select:none;}
+.mst:hover,.mst.open{border-color:var(--purple);box-shadow:0 0 0 3px rgba(91,33,182,.09);}
+.mst::after{content:'';position:absolute;right:10px;top:50%;transform:translateY(-50%);width:0;height:0;border-left:4px solid transparent;border-right:4px solid transparent;border-top:5px solid var(--ink3);pointer-events:none;}
+.mst.open::after{transform:translateY(-50%) rotate(180deg);}
+.mph{color:var(--ink3);font-size:13px;padding:2px 0;}
+.tag{display:inline-flex;align-items:center;gap:4px;background:var(--purple-ll);color:var(--purple-d);border-radius:3px;padding:2px 6px;font-size:11.5px;font-weight:500;max-width:180px;}
+.tag span{white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.tagx{cursor:pointer;width:13px;height:13px;border-radius:50%;background:rgba(91,33,182,.15);display:flex;align-items:center;justify-content:center;flex-shrink:0;position:relative;}
+.tagx:hover{background:rgba(91,33,182,.3);}
+.tagx::before,.tagx::after{content:'';position:absolute;width:7px;height:1.5px;background:var(--purple-d);}
+.tagx::before{transform:rotate(45deg);}
+.tagx::after{transform:rotate(-45deg);}
+.ddm{position:absolute;top:calc(100% + 4px);left:0;right:0;background:var(--white);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);z-index:1000;max-height:220px;display:flex;flex-direction:column;overflow:hidden;}
+.dds{padding:7px;border-bottom:1px solid var(--line2);flex-shrink:0;}
+.dds input{width:100%;border:1px solid var(--line);border-radius:5px;padding:5px 8px;font-family:inherit;font-size:12px;outline:none;}
+.dds input:focus{border-color:var(--purple);}
+.ddl{overflow-y:auto;flex:1;}
+.ddo{padding:7px 10px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:12.5px;}
+.ddo:hover{background:var(--bg);}
+.ddo.sel{background:var(--purple-l);}
+.chk{width:14px;height:14px;border:1.5px solid var(--ink3);border-radius:3px;flex-shrink:0;display:flex;align-items:center;justify-content:center;}
+.ddo.sel .chk{background:var(--purple);border-color:var(--purple);}
+.ddo.sel .chk::after{content:'';width:7px;height:4px;border-left:2px solid #fff;border-bottom:2px solid #fff;transform:rotate(-45deg) translateY(-1px);}
+.ddot{flex:1;min-width:0;}
+.ddos{font-size:11px;color:var(--ink3);}
+.dde{padding:12px;text-align:center;color:var(--ink3);font-size:12px;}
+.dd-add{padding:8px 12px;cursor:pointer;font-size:12px;color:var(--purple);font-weight:600;display:flex;align-items:center;gap:6px;border-top:1px solid var(--line2);}
+.dd-add:hover{background:var(--purple-l);}
+
+/* STATUS CHIPS */
+.status-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px;}
+.sc{padding:5px 16px;border-radius:20px;border:1.5px solid var(--line);background:var(--white);font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;color:var(--ink3);transition:all .15s;}
+.sc.done{background:var(--green-l);border-color:var(--green);color:var(--green);}
+.sc.notdone{background:var(--red-l);border-color:var(--red);color:var(--red);}
+.sc.awaiting{background:var(--amber-l);border-color:var(--amber-b);color:var(--amber);}
+
+/* CONDITIONAL REVEAL */
+.cond-reveal{background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;margin-top:8px;display:none;}
+.cond-reveal.show{display:block;}
+.cond-reveal .f-grid{margin-top:0;}
+
+/* VIEW */
+.vw{flex:1;display:flex;flex-direction:column;overflow:hidden;}
+.v-actions{display:flex;align-items:center;gap:10px;padding:12px 20px;border-bottom:1px solid var(--line);flex-shrink:0;background:var(--green-l);}
+.v-msg{font-size:13px;font-weight:600;color:var(--green);flex:1;display:flex;align-items:center;gap:7px;}
+.v-msg svg{width:16px;height:16px;fill:var(--green);}
+.va-btn{padding:7px 14px;border-radius:var(--r);border:none;cursor:pointer;font-family:inherit;font-size:12.5px;font-weight:600;}
+.va-btn.edit{background:var(--purple);color:#fff;}
+.va-btn.edit:hover{background:var(--purple-d);}
+.va-btn.newrec{background:var(--white);color:var(--ink3);border:1px solid var(--line);}
+.v-body{flex:1;overflow-y:auto;padding:20px 24px;}
+.v-title{font-size:17px;font-weight:700;margin-bottom:4px;}
+.v-sec{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--purple);margin-bottom:10px;margin-top:18px;padding-bottom:5px;border-bottom:2px solid var(--purple-l);}
+.v-sec.blue{color:var(--blue);border-bottom-color:var(--blue-l);}
+.v-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px 22px;}
+.vf{display:flex;flex-direction:column;gap:3px;}
+.vf.full{grid-column:1/-1;}
+.vf-lbl{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);}
+.vf-val{font-size:12.5px;font-weight:500;min-height:18px;}
+.vf-val.empty{color:var(--ink3);font-style:italic;font-weight:400;}
+
+/* MODALS */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:2000;}
+.modal{background:var(--white);border-radius:12px;padding:26px;width:420px;max-width:94vw;box-shadow:var(--shadow-lg);}
+.modal h3{font-size:14px;font-weight:700;margin-bottom:16px;}
+.modal-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;}
+.mfg{display:flex;flex-direction:column;gap:5px;}
+.mfg.full{grid-column:1/-1;}
+.mfg label{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);}
+.mfi{height:34px;padding:0 10px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:13px;outline:none;width:100%;}
+.mfi:focus{border-color:var(--purple);}
+.mfi.ro{background:var(--bg);color:var(--ink3);}
+.modal-footer{display:flex;justify-content:flex-end;gap:8px;margin-top:20px;}
+.m-btn{padding:8px 16px;border-radius:var(--r);border:none;cursor:pointer;font-family:inherit;font-size:13px;font-weight:600;}
+.m-btn.primary{background:var(--purple);color:#fff;}
+.m-btn.primary:hover{background:var(--purple-d);}
+.m-btn.secondary{background:var(--line2);color:var(--ink3);}
+
+.lov{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:center;justify-content:center;z-index:9999;}
+.spin{width:34px;height:34px;border:3px solid rgba(255,255,255,.3);border-top-color:#fff;border-radius:50%;animation:sp .7s linear infinite;}
+@keyframes sp{to{transform:rotate(360deg);}}
+.toast{position:fixed;bottom:20px;left:50%;transform:translateX(-50%);background:var(--ink);color:#fff;padding:10px 18px;border-radius:6px;font-size:13px;font-weight:500;z-index:9999;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap;}
+.toast.show{opacity:1;}
+.toast.success{background:var(--green);}
+.toast.error{background:var(--red);}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <div class="hdr-logo">ConfDope <span class="hdr-badge">Training</span></div>
+  <button class="tab-btn active" id="tab0btn" onclick="switchTab(0)">Dashboard</button>
+  <button class="tab-btn" id="tab1btn" onclick="switchTab(1)">Entry Form</button>
+  <button class="tab-btn" id="tab2btn" onclick="switchTab(2)">Update / Status</button>
+  <div class="hdr-right" style="display:flex;align-items:center;gap:8px;">
+    <button onclick="refreshAll()" title="Refresh all data" style="height:30px;padding:0 12px;background:rgba(255,255,255,.1);border:none;border-radius:5px;color:#fff;font-family:inherit;font-size:12px;font-weight:600;cursor:pointer;display:flex;align-items:center;gap:5px;">
+      <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+      Refresh
+    </button>
+    <button class="hdr-home" onclick="switchTab(0)"><svg viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg></button>
+  </div>
+</div>
+
+<!-- PAGE 0 DASHBOARD -->
+<div class="page active" id="page0">
+  <div class="dash-wrap"><div class="dash-inner">
+    <div class="dash-top">
+      <div><div class="dash-heading">Training Overview</div><div class="dash-sub" id="dashDate"></div></div>
+      <button class="dash-new-btn" onclick="switchTab(1);newRecord()"><svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>New Training</button>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;background:var(--white);border-radius:var(--r);padding:10px 14px;box-shadow:var(--shadow-sm);flex-wrap:wrap;">
+      <span style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;">Filter</span>
+      <select id="dashCoFilter" onchange="renderDash()" style="height:32px;padding:0 8px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink);background:var(--white);outline:none;min-width:150px;cursor:pointer;"><option value="">All Companies</option></select>
+      <select id="dashClientFilter" onchange="renderDash()" style="height:32px;padding:0 8px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink);background:var(--white);outline:none;min-width:140px;cursor:pointer;"><option value="">All Clients</option></select>
+      <select id="dashSecFilter" onchange="renderDash()" style="height:32px;padding:0 8px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink);background:var(--white);outline:none;min-width:130px;cursor:pointer;"><option value="">All Sectors</option></select>
+      <select id="dashSapFilter" onchange="renderDash()" style="height:32px;padding:0 8px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink);background:var(--white);outline:none;min-width:130px;cursor:pointer;"><option value="">All SAP Codes</option></select>
+      <select id="dashTypeFilter" onchange="renderDash()" style="height:32px;padding:0 8px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink);background:var(--white);outline:none;min-width:140px;cursor:pointer;">
+        <option value="">All Types</option>
+        <option value="online">VISIO</option>
+        <option value="presential-internal">Presential — internal</option>
+        <option value="presential-client">Presential — client</option>
+      </select>
+      <button onclick="clearDashFilters()" style="height:32px;padding:0 12px;background:none;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink3);cursor:pointer;">✕ Clear</button>
+    </div>
+    <div class="kpi-row">
+      <div class="kpi purple"><div class="kpi-val" id="kpi-total">—</div><div class="kpi-lbl">Total Records</div><div class="kpi-sub">All time</div></div>
+      <div class="kpi green"><div class="kpi-val" id="kpi-active">—</div><div class="kpi-lbl">Active Now</div><div class="kpi-sub">In date range</div></div>
+      <div class="kpi amber"><div class="kpi-val" id="kpi-upcoming">—</div><div class="kpi-lbl">Upcoming</div><div class="kpi-sub">Next 30 days</div></div>
+      <div class="kpi blue"><div class="kpi-val" id="kpi-done">—</div><div class="kpi-lbl">Completed</div><div class="kpi-sub">Marked as done</div></div>
+    </div>
+    <div class="charts-row">
+      <div class="chart-card"><div class="chart-card-title">By Client</div><div id="chart-cl"></div></div>
+      <div class="chart-card"><div class="chart-card-title">By Training Type</div><div id="chart-type"></div></div>
+    </div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;margin-top:4px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);">Active now — click to edit</div>
+      <div style="font-size:11px;color:var(--ink3);" id="dashCnt"></div>
+    </div>
+    <div id="dashTbl"></div>
+  </div></div>
+</div>
+
+<!-- PAGE 1 ENTRY FORM -->
+<div class="page" id="page1">
+  <div class="ef-layout">
+    <div class="ef-sidebar">
+      <div class="ef-sb-top">
+        <div class="ef-search">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="sbSearch" placeholder="Search…" oninput="filterSidebar()">
+        </div>
+        <button class="btn-new-rec" onclick="newRecord()"><svg width="15" height="15" viewBox="0 0 24 24" fill="currentColor"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>New Record</button>
+      </div>
+      <div class="ef-list" id="efList"><div class="ef-empty-li">Loading…</div></div>
+    </div>
+
+    <div class="ef-panel">
+      <div class="ef-landing" id="efLanding">
+        <div style="margin-bottom:20px;">
+          <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);margin-bottom:5px;" id="efDate"></div>
+          <h2 style="font-size:22px;font-weight:800;margin-bottom:5px;">Active Trainings</h2>
+          <p style="font-size:13px;color:var(--ink3);">Sessions currently in date range. Past records in the sidebar.</p>
+        </div>
+        <button onclick="newRecord()" style="display:inline-flex;align-items:center;gap:7px;padding:11px 22px;background:var(--purple);color:#fff;border:none;border-radius:8px;font-family:inherit;font-size:13.5px;font-weight:700;cursor:pointer;margin-bottom:28px;box-shadow:0 3px 12px rgba(91,33,182,.3);">
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="#fff"><path d="M19 13h-6v6h-2v-6H5v-2h6V5h2v6h6v2z"/></svg>New Training Record
+        </button>
+        <div id="efActiveTbl"></div>
+      </div>
+
+      <div id="formWrap" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+        <div class="ef-toolbar">
+          <button class="tb-btn save" onclick="saveRecord()"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button>
+          <button class="tb-btn cancel" onclick="cancelEdit()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+          <span class="ef-tb-title" id="formTitle">New Record</span>
+          <span class="badge new-b" id="statusBadge">NEW</span>
+        </div>
+        <div class="ef-fb">
+
+          <!-- GENERAL INFORMATION -->
+          <div class="f-section">
+            <div class="f-sec-title blue">General Information</div>
+            <div class="f-grid" style="margin-bottom:12px;">
+              <div class="fg"><label>Company</label>
+                <div class="msw" id="ms-company"><div class="mst" id="mst-company" tabindex="0" onclick="toggleDD('company')"><span class="mph" id="ph-company">Select…</span></div><div class="ddm" id="dm-company" style="display:none"><div class="dds"><input type="text" placeholder="Search…" oninput="filterDD('company',this.value)"></div><div class="ddl" id="dl-company"></div></div></div>
+              </div>
+              <div class="fg"><label>Code Affaire</label><input type="text" class="fi" id="f-code" placeholder="e.g. PT260007"></div>
+            </div>
+            <div class="f-grid cols3" style="margin-bottom:12px;">
+              <div class="fg"><label>Client</label>
+                <div class="msw" id="ms-client"><div class="mst" id="mst-client" tabindex="0" onclick="toggleDD('client')"><span class="mph" id="ph-client">Select…</span></div><div class="ddm" id="dm-client" style="display:none"><div class="dds"><input type="text" placeholder="Search…" oninput="filterDD('client',this.value)"></div><div class="ddl" id="dl-client"></div></div></div>
+              </div>
+              <div class="fg"><label>Brand</label>
+                <div class="msw" id="ms-brand"><div class="mst" id="mst-brand" tabindex="0" onclick="toggleDD('brand')"><span class="mph" id="ph-brand">Select…</span></div><div class="ddm" id="dm-brand" style="display:none"><div class="dds"><input type="text" placeholder="Search…" oninput="filterDD('brand',this.value)"></div><div class="ddl" id="dl-brand"></div></div></div>
+              </div>
+              <div class="fg"><label>Contact Client <button class="lbl-add" onclick="openContactModal()">+ Add</button></label>
+                <div class="msw" id="ms-contact"><div class="mst" id="mst-contact" tabindex="0" onclick="toggleDD('contact')"><span class="mph" id="ph-contact">Select…</span></div><div class="ddm" id="dm-contact" style="display:none"><div class="dds"><input type="text" placeholder="Search…" oninput="filterDD('contact',this.value)"></div><div class="ddl" id="dl-contact"></div></div></div>
+              </div>
+            </div>
+            <div class="f-grid" style="margin-bottom:12px;">
+              <div class="fg"><label>Sector / Airport</label>
+                <div class="msw" id="ms-sector"><div class="mst" id="mst-sector" tabindex="0" onclick="toggleDD('sector')"><span class="mph" id="ph-sector">Select…</span></div><div class="ddm" id="dm-sector" style="display:none"><div class="dds"><input type="text" placeholder="Search…" oninput="filterDD('sector',this.value)"></div><div class="ddl" id="dl-sector"></div></div></div>
+              </div>
+              <div class="fg"><label>Store</label>
+                <div class="msw" id="ms-store"><div class="mst" id="mst-store" tabindex="0" onclick="toggleDD('store')"><span class="mph" id="ph-store">Select…</span></div><div class="ddm" id="dm-store" style="display:none"><div class="dds"><input type="text" placeholder="Search…" oninput="filterDD('store',this.value)"></div><div class="ddl" id="dl-store"></div></div></div>
+              </div>
+            </div>
+            <div class="f-grid" style="margin-bottom:12px;">
+              <div class="fg"><label>Start Date</label><input type="date" class="fi" id="f-startdate"></div>
+              <div class="fg"><label>End Date</label><input type="date" class="fi" id="f-enddate"></div>
+            </div>
+            <div class="fg full"><label>Mission Name</label><input type="text" class="fi" id="f-title" placeholder="e.g. Armani Beauty Advisor Training — CDG T2"></div>
+          </div>
+
+          <!-- TRAINING -->
+          <div class="f-section">
+            <div class="f-sec-title purple">Training</div>
+
+            <!-- Hours -->
+            <div class="f-grid" style="margin-bottom:12px;">
+              <div class="fg"><label>Number of Training Hours</label><input type="text" class="fi" id="f-train-hours" placeholder="e.g. 2h"></div>
+              <div class="fg"><label>Hours Removed from GI?</label>
+                <div class="yn-row">
+                  <button class="yn-btn" id="yn-trainrm-y" onclick="setYN('trainrm',true)">Yes</button>
+                  <button class="yn-btn" id="yn-trainrm-n" onclick="setYN('trainrm',false)">No</button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Brand provides training -->
+            <div class="fg full" style="margin-bottom:12px;">
+              <label>Brand Provides Training?</label>
+              <div class="yn-row">
+                <button class="yn-btn" id="yn-brand-y" onclick="setYN('brand',true);toggleBrandFormat(true)">Yes</button>
+                <button class="yn-btn" id="yn-brand-n" onclick="setYN('brand',false);toggleBrandFormat(false)">No</button>
+              </div>
+              <div class="cond-reveal" id="brand-format-wrap">
+                <div style="font-size:10.5px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px;">Format</div>
+                <div class="yn-row">
+                  <button class="yn-btn" id="yn-format-online" onclick="setBrandFormat('online')">Online</button>
+                  <button class="yn-btn" id="yn-format-presential" onclick="setBrandFormat('presential')">Presential</button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+      <!-- VIEW -->
+      <div class="vw" id="viewWrap" style="display:none;">
+        <div class="v-actions">
+          <span class="v-msg"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>Saved successfully</span>
+          <button class="va-btn edit" onclick="enterEdit()">Edit</button>
+          <button class="va-btn newrec" onclick="newRecord()">+ New</button>
+        </div>
+        <div class="v-body"><div class="v-title" id="vTitle"></div><div id="vBody"></div></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- PAGE 2 UPDATE / STATUS -->
+<div class="page" id="page2">
+  <div class="ef-layout">
+    <!-- sidebar: non-active records -->
+    <div class="ef-sidebar">
+      <div class="ef-sb-top">
+        <div class="ef-search">
+          <svg viewBox="0 0 24 24"><path d="M15.5 14h-.79l-.28-.27A6.471 6.471 0 0016 9.5 6.5 6.5 0 109.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/></svg>
+          <input type="text" id="stSearch" placeholder="Search done…" oninput="filterStatusSidebar()">
+        </div>
+      </div>
+      <div class="ef-list" id="stList"><div class="ef-empty-li">Loading…</div></div>
+    </div>
+
+    <!-- main panel -->
+    <div class="ef-panel">
+
+      <!-- LANDING: active records grid -->
+      <div id="stLanding" style="flex:1;overflow:auto;background:var(--bg);padding:20px 24px;">
+        <div style="margin-bottom:12px;">
+          <h2 style="font-size:20px;font-weight:800;margin-bottom:8px;">Active Trainings — Update Status</h2>
+          <div style="display:flex;align-items:center;gap:8px;background:var(--white);border-radius:var(--r);padding:10px 14px;box-shadow:var(--shadow-sm);flex-wrap:wrap;margin-bottom:4px;">
+            <span style="font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.05em;white-space:nowrap;">Filter</span>
+            <select id="stCoFilter" onchange="renderStatusLanding()" style="height:30px;padding:0 8px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink);background:var(--white);outline:none;min-width:150px;cursor:pointer;"><option value="">All Companies</option></select>
+            <select id="stClientFilter" onchange="renderStatusLanding()" style="height:30px;padding:0 8px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink);background:var(--white);outline:none;min-width:130px;cursor:pointer;"><option value="">All Clients</option></select>
+            <select id="stSecFilter" onchange="renderStatusLanding()" style="height:30px;padding:0 8px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink);background:var(--white);outline:none;min-width:120px;cursor:pointer;"><option value="">All Sectors</option></select>
+            <select id="stSapFilter" onchange="renderStatusLanding()" style="height:30px;padding:0 8px;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink);background:var(--white);outline:none;min-width:120px;cursor:pointer;"><option value="">All SAP Codes</option></select>
+            <button onclick="clearStFilters()" style="height:30px;padding:0 12px;background:none;border:1px solid var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;color:var(--ink3);cursor:pointer;">✕ Clear</button>
+          </div>
+        </div>
+        <div id="stActiveTbl"></div>
+      </div>
+
+      <!-- STATUS FORM -->
+      <div id="stFormWrap" style="display:none;flex:1;flex-direction:column;overflow:hidden;">
+        <div class="ef-toolbar">
+          <button class="tb-btn save" onclick="saveStatus()"><svg viewBox="0 0 24 24"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg></button>
+          <button class="tb-btn cancel" onclick="cancelStatus()"><svg viewBox="0 0 24 24"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg></button>
+          <span class="ef-tb-title" id="stFormTitle">—</span>
+          <span class="badge exist-b" id="stBadge" style="font-size:10px;"></span>
+        </div>
+        <div class="ef-fb">
+          <div class="f-section">
+            <div class="f-sec-title purple">Status Update</div>
+
+            <!-- Trainer -->
+            <div class="f-grid" style="margin-bottom:12px;">
+              <div class="fg full"><label>Trainer</label>
+                <div class="msw" id="ms-trainer"><div class="mst" id="mst-trainer" tabindex="0" onclick="toggleDD('trainer')"><span class="mph" id="ph-trainer">Select trainer…</span></div><div class="ddm" id="dm-trainer" style="display:none"><div class="dds"><input type="text" placeholder="Search…" oninput="filterDD('trainer',this.value)"></div><div class="ddl" id="dl-trainer"></div><div class="dd-add" onclick="openTrainerModal()">+ Create new Trainer</div></div></div>
+              </div>
+            </div>
+
+            <!-- Contact client training -->
+            <div class="fg full" style="margin-bottom:12px;">
+              <label>Contact Client — Training <button class="lbl-add" onclick="openContactModal()">+ Add</button></label>
+              <div class="msw" id="ms-traincontact"><div class="mst" id="mst-traincontact" tabindex="0" onclick="toggleDD('traincontact')"><span class="mph" id="ph-traincontact">Select one or more contacts…</span></div><div class="ddm" id="dm-traincontact" style="display:none"><div class="dds"><input type="text" placeholder="Search…" oninput="filterDD('traincontact',this.value)"></div><div class="ddl" id="dl-traincontact"></div></div></div>
+            </div>
+
+            <!-- Client contact status -->
+            <div class="fg full" style="margin-bottom:12px;">
+              <label>Client Contact — Status</label>
+              <div class="status-row">
+                <button class="sc" id="sc-done" onclick="setContactStatus('done')">Done</button>
+                <button class="sc notdone" id="sc-notdone" onclick="setContactStatus('notdone')">Not Done</button>
+                <button class="sc" id="sc-awaiting" onclick="setContactStatus('awaiting')">Awaiting</button>
+              </div>
+              <div class="cond-reveal" id="status-done-wrap">
+                <div class="fg"><label>Date of Contact</label><input type="date" class="fi" id="f-contact-date"></div>
+              </div>
+              <div class="cond-reveal" id="status-awaiting-wrap">
+                <div class="fg"><label>Comments</label><input type="text" class="fi" id="f-contact-comments" placeholder="e.g. Pending reply from client…"></div>
+              </div>
+            </div>
+
+            <!-- Prise d'accord -->
+            <div class="fg full" style="margin-bottom:12px;">
+              <label>Prise d'accord (PA) <span style="font-size:10px;font-weight:400;color:var(--ink3);text-transform:none;letter-spacing:0;">— blank by default</span></label>
+              <input type="text" class="fi" id="f-pa" placeholder="Leave blank or enter notes…" oninput="onPAChange()">
+              <div class="cond-reveal" id="pa-details-wrap">
+                <div class="f-grid">
+                  <div class="fg"><label>PA Date</label><input type="date" class="fi" id="f-pa-date"></div>
+                  <div class="fg"><label>Link GI</label><input type="url" class="fi" id="f-pa-link" placeholder="https://gi.globe-groupe.com/…"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Backoffice -->
+            <div class="f-grid" style="margin-bottom:12px;">
+              <div class="fg">
+                <label>Backoffice</label>
+                <select class="fi" id="f-backoffice" onchange="onBackofficeChange()">
+                  <option value="">— Select —</option>
+                  <option value="validated">Validated</option>
+                  <option value="not-validated">Not Validated</option>
+                </select>
+                <div class="cond-reveal" id="backoffice-date-wrap">
+                  <div class="fg"><label>Validation Date</label><input type="date" class="fi" id="f-backoffice-date"></div>
+                </div>
+              </div>
+              <div class="fg"></div>
+            </div>
+
+            <!-- General comments -->
+            <div class="fg full">
+              <label>General Comments</label>
+              <textarea class="fi" id="f-comments" placeholder="Additional notes, remarks…" style="height:72px;"></textarea>
+            </div>
+
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- MODAL: Client Contact -->
+<div class="modal-bg" id="contactModal" style="display:none;" onclick="if(event.target===this)closeContactModal()">
+  <div class="modal">
+    <h3>Add New Contact</h3>
+    <div class="modal-grid">
+      <div class="mfg"><label>First Name *</label><input type="text" class="mfi" id="mc-fn" placeholder="First name…"></div>
+      <div class="mfg"><label>Last Name *</label><input type="text" class="mfi" id="mc-ln" placeholder="Last name…"></div>
+      <div class="mfg full"><label>Email</label><input type="email" class="mfi" id="mc-email" placeholder="email@example.com"></div>
+      <div class="mfg full"><label>Client</label><input type="text" class="mfi ro" id="mc-client" readonly></div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn secondary" onclick="closeContactModal()">Cancel</button>
+      <button class="m-btn primary" onclick="saveContact()">Save</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- MODAL: Trainer -->
+<div class="modal-bg" id="trainerModal" style="display:none;" onclick="if(event.target===this)closeTrainerModal()">
+  <div class="modal">
+    <h3>Add New Trainer</h3>
+    <div class="modal-grid">
+      <div class="mfg"><label>First Name *</label><input type="text" class="mfi" id="tr-fn" placeholder="First name…"></div>
+      <div class="mfg"><label>Last Name *</label><input type="text" class="mfi" id="tr-ln" placeholder="Last name…"></div>
+      <div class="mfg full"><label>Email</label><input type="email" class="mfi" id="tr-email" placeholder="email@example.com"></div>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn secondary" onclick="closeTrainerModal()">Cancel</button>
+      <button class="m-btn primary" onclick="saveTrainer()">Save</button>
+    </div>
+  </div>
+</div>
+
+<div class="toast" id="toast"></div>
+
+<script>
+const SB='https://qooytgsjjzvkqaumoqmw.supabase.co';
+const KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFvb3l0Z3Nqanp2a3FhdW1vcW13Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3MjUzNjM0ODMsImV4cCI6MjA0MDkzOTQ4M30.Oai2A8Qii0aOfD91NFwHsNq3Tgq1yFHwih-GRFnsEC0';
+const H={'apikey':KEY,'Authorization':'Bearer '+KEY,'Content-Type':'application/json','Prefer':'return=representation'};
+const TBL='C_Training';
+const sbGet=async p=>{const r=await fetch(SB+'/rest/v1/'+p,{headers:H});if(!r.ok)throw new Error(await r.text());return r.json();};
+const sbPost=async(t,d)=>{const r=await fetch(SB+'/rest/v1/'+t,{method:'POST',headers:H,body:JSON.stringify(d)});if(!r.ok)throw new Error(await r.text());return r.json();};
+const sbPatch=async(t,id,d)=>{const r=await fetch(SB+'/rest/v1/'+t+'?id=eq.'+id,{method:'PATCH',headers:H,body:JSON.stringify(d)});if(!r.ok)throw new Error(await r.text());return r.json();};
+
+let allCo=[],allCl=[],allBr=[],allCon=[],allSec=[],allSt=[],allTr=[],allRec=[],filtRec=[];
+let curRec=null,isNew=false,curStatus=null;
+const TODAY=new Date();TODAY.setHours(0,0,0,0);
+const toISO=d=>d.toISOString().split('T')[0];
+const todayISO=toISO(TODAY);
+const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+const fd=d=>{if(!d)return'';const p=(d+'').split('T')[0].split('-');return`${p[2]} ${MONTHS[parseInt(p[1])-1]} ${p[0]}`;};
+const esc=s=>String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+const isInRange=r=>r.startdate&&r.enddate&&r.startdate<=todayISO&&r.enddate>=todayISO;
+const isUpcoming=r=>{if(!r.startdate)return false;const diff=(new Date(r.startdate)-TODAY)/864e5;return diff>0&&diff<=30;};
+const nowLabel=(()=>{const n=new Date();return`${DAYS[n.getDay()]}, ${MONTHS[n.getMonth()]} ${n.getDate()}, ${n.getFullYear()}`;})();
+
+// YN
+const YN={trainrm:null,brand:null};
+let brandFormat=null; // 'online'|'presential'|null
+let contactStatus='notdone';
+
+function setYN(k,v){
+  YN[k]=v;
+  const y=document.getElementById('yn-'+k+'-y'),n=document.getElementById('yn-'+k+'-n');
+  if(y)y.className='yn-btn'+(v===true?' y':'');
+  if(n)n.className='yn-btn'+(v===false?' n':'');
+}
+function loadYN(k,v){
+  if(v===true||v===false)setYN(k,v);
+  else{YN[k]=null;const y=document.getElementById('yn-'+k+'-y'),n=document.getElementById('yn-'+k+'-n');if(y)y.className='yn-btn';if(n)n.className='yn-btn';}
+}
+function resetAllYN(){Object.keys(YN).forEach(k=>loadYN(k,null));}
+
+function toggleBrandFormat(show){
+  const w=document.getElementById('brand-format-wrap');
+  if(w)w.classList.toggle('show',show);
+  if(!show){brandFormat=null;document.getElementById('yn-format-online').className='yn-btn';document.getElementById('yn-format-presential').className='yn-btn';}
+}
+function setBrandFormat(f){
+  brandFormat=f;
+  document.getElementById('yn-format-online').className='yn-btn'+(f==='online'?' p':'');
+  document.getElementById('yn-format-presential').className='yn-btn'+(f==='presential'?' p':'');
+}
+
+function setContactStatus(s){
+  contactStatus=s;
+  ['done','notdone','awaiting'].forEach(k=>{
+    const el=document.getElementById('sc-'+k);
+    if(el)el.className='sc'+(k===s?' '+(k==='done'?'done':k==='awaiting'?'awaiting':'notdone'):'');
+  });
+  show('status-done-wrap',s==='done');
+  show('status-awaiting-wrap',s==='awaiting');
+}
+
+function onPAChange(){
+  const v=document.getElementById('f-pa').value.trim();
+  show('pa-details-wrap',v.length>0);
+}
+
+function onBackofficeChange(){
+  const v=document.getElementById('f-backoffice').value;
+  show('backoffice-date-wrap',v==='validated');
+}
+
+function show(id,v){const el=document.getElementById(id);if(el)el.classList.toggle('show',v);}
+
+// Dropdowns
+const MS_KEYS=['company','client','brand','contact','sector','store','traincontact','trainer'];
+const SINGLES=new Set(['client','sector','trainer']);
+const ms=Object.fromEntries(MS_KEYS.map(k=>[k,{all:[],selected:[]}]));
+
+function toggleDD(k){const dm=document.getElementById('dm-'+k),mst=document.getElementById('mst-'+k);if(!dm)return;const open=dm.style.display!=='none';closeAllDDs();if(!open){dm.style.display='flex';mst.classList.add('open');renderDDL(k,'');dm.querySelector('input')?.focus();}}
+function closeAllDDs(){MS_KEYS.forEach(k=>{const dm=document.getElementById('dm-'+k),mst=document.getElementById('mst-'+k);if(dm)dm.style.display='none';if(mst)mst.classList.remove('open');});}
+document.addEventListener('click',e=>{if(!e.target.closest('.msw'))closeAllDDs();});
+function filterDD(k,q){renderDDL(k,q.toLowerCase());}
+function renderDDL(k,q){
+  const dl=document.getElementById('dl-'+k);if(!dl)return;
+  let opts=ms[k].all;if(q)opts=opts.filter(o=>(o.label||'').toLowerCase().includes(q)||(o.sub||'').toLowerCase().includes(q));
+  if(!opts.length){dl.innerHTML='<div class="dde">No results</div>';return;}
+  dl.innerHTML=opts.map(o=>{const sel=ms[k].selected.some(s=>String(s.id)===String(o.id));return`<div class="ddo${sel?' sel':''}" onclick="toggleOpt('${k}','${o.id}')"><div class="chk"></div><div class="ddot"><div>${esc(o.label)}</div>${o.sub?`<div class="ddos">${esc(o.sub)}</div>`:''}</div></div>`;}).join('');
+}
+function toggleOpt(k,id){
+  const opt=ms[k].all.find(o=>String(o.id)===String(id));if(!opt)return;
+  const idx=ms[k].selected.findIndex(s=>String(s.id)===String(id));
+  if(idx>=0)ms[k].selected.splice(idx,1);
+  else if(SINGLES.has(k))ms[k].selected=[opt];
+  else ms[k].selected.push(opt);
+  renderTags(k);renderDDL(k,document.querySelector(`#dm-${k} input`)?.value.toLowerCase()||'');
+  if(k==='client')applyClientFilter(true);
+  if(k==='company')applyCompanyFilter(true);
+  if(k==='sector')applySectorFilter(true);
+}
+function renderTags(k){
+  const el=document.getElementById('mst-'+k),ph=document.getElementById('ph-'+k);if(!el||!ph)return;
+  el.querySelectorAll('.tag').forEach(t=>t.remove());
+  if(!ms[k].selected.length){ph.style.display='';return;}
+  ph.style.display='none';
+  ms[k].selected.forEach(o=>{const t=document.createElement('span');t.className='tag';t.innerHTML=`<span title="${esc(o.label)}">${esc(o.label)}</span><span class="tagx" onclick="event.stopPropagation();rmTag('${k}','${o.id}')"></span>`;el.insertBefore(t,ph);});
+}
+function rmTag(k,id){ms[k].selected=ms[k].selected.filter(o=>String(o.id)!==String(id));renderTags(k);if(k==='client')applyClientFilter(true);if(k==='company')applyCompanyFilter(true);if(k==='sector')applySectorFilter(true);}
+
+function applyClientFilter(reset=true){
+  const cId=ms.client.selected[0]?.id||null;
+  ms.brand.all=(cId?allBr.filter(b=>String(b.client_giid)===String(cId)):allBr).map(b=>({id:b.id,label:b.brand,sub:'',meta:b}));
+  ms.contact.all=(cId?allCon.filter(c=>String(c.client_id)===String(cId)):allCon).map(c=>({id:c.id,label:c.Fullname||'—',sub:c.email||'',meta:c}));
+  ms.traincontact.all=ms.contact.all.slice();
+  if(reset){ms.brand.selected=[];ms.contact.selected=[];ms.traincontact.selected=[];renderTags('brand');renderTags('contact');renderTags('traincontact');}
+}
+function applyCompanyFilter(reset=true){
+  const coIds=ms.company.selected.map(o=>String(o.id));
+  ms.sector.all=(coIds.length?allSec.filter(s=>coIds.includes(String(s.companyid))):allSec).map(s=>({id:s.id,label:s.Name,sub:'',meta:s}));
+  if(reset){ms.sector.selected=[];ms.store.selected=[];renderTags('sector');renderTags('store');}
+  applySectorFilter(false);
+}
+function applySectorFilter(reset=true){
+  const secId=ms.sector.selected[0]?.id||null;
+  ms.store.all=(secId?allSt.filter(s=>String(s.Sector_id)===String(secId)):allSt).map(s=>({id:s.id,label:s.store,sub:'',meta:s}));
+  if(reset){ms.store.selected=[];renderTags('store');}
+}
+
+// Navigation
+function switchTab(n){[0,1,2].forEach(i=>{document.getElementById('page'+i)?.classList.toggle('active',i===n);document.getElementById('tab'+i+'btn')?.classList.toggle('active',i===n);});if(n===0)renderDash();if(n===2)renderStatusPage();}
+function showPanel(m){document.getElementById('efLanding').style.display=m==='landing'?'':'none';document.getElementById('formWrap').style.display=m==='edit'?'flex':'none';document.getElementById('viewWrap').style.display=m==='view'?'flex':'none';}
+
+// Init
+async function init(){
+  try{
+    const[co,cl,br,sec,st,con,tr,rec]=await Promise.all([
+      sbGet('GI_company?select=id,name&active=eq.true&order=name'),
+      sbGet('GI_clients?select=id,client&active=eq.true&order=client'),
+      sbGet('GI_brands?select=id,brand,client_giid&visible=eq.true&order=brand'),
+      sbGet('Sector?select=id,Name,companyid&order=Name'),
+      sbGet('GI_stores?select=id,store,Sector_id&visible=eq.true&order=store'),
+      sbGet('C_contacts?select=id,Fullname,email,client_id&active=eq.true&order=Fullname'),
+      sbGet('Contacts_Operations?select=id,firstname,lastname,email,jobtitle&jobtitle=eq.Trainer&order=lastname'),
+      sbGet(TBL+'?select=*&order=startdate.desc.nullslast,createdat.desc').catch(()=>[]),
+    ]);
+    allCo=co||[];allCl=cl||[];allBr=br||[];allSec=sec||[];allSt=st||[];allCon=con||[];allTr=tr||[];
+    allRec=filtRec=rec||[];
+    ms.company.all=co.map(c=>({id:c.id,label:c.name,sub:'',meta:c}));
+    ms.client.all=cl.map(c=>({id:c.id,label:c.client,sub:'',meta:c}));
+    ms.brand.all=br.map(b=>({id:b.id,label:b.brand,sub:'',meta:b}));
+    ms.sector.all=sec.map(s=>({id:s.id,label:s.Name,sub:'',meta:s}));
+    ms.store.all=st.map(s=>({id:s.id,label:s.store,sub:'',meta:s}));
+    ms.contact.all=con.map(c=>({id:c.id,label:c.Fullname||'—',sub:c.email||'',meta:c}));
+    ms.traincontact.all=ms.contact.all.slice();
+    ms.trainer.all=tr.map(c=>({id:c.id,label:c.firstname+' '+c.lastname,sub:c.email||'',meta:c}));
+    renderDash();renderSidebar();renderLanding();renderStatusLanding();renderStatusSidebar();
+  }catch(e){toast('Load failed: '+e.message,'error');}
+}
+
+function _populateFilter(selId, values){
+  const sel=document.getElementById(selId);if(!sel)return;
+  const cur=sel.value;
+  while(sel.options.length>1)sel.remove(1);
+  values.forEach(([v,l])=>{const o=document.createElement('option');o.value=v;o.textContent=l;sel.appendChild(o);});
+  if([...sel.options].some(o=>o.value===cur))sel.value=cur;
+}
+
+function getFilteredRecs(){
+  const selCo=document.getElementById('dashCoFilter')?.value||'';
+  const selCl=document.getElementById('dashClientFilter')?.value||'';
+  const selSec=document.getElementById('dashSecFilter')?.value||'';
+  const selSap=document.getElementById('dashSapFilter')?.value||'';
+  const selType=document.getElementById('dashTypeFilter')?.value||'';
+  return allRec.filter(r=>{
+    if(selCo&&!(r.company_ids||[]).map(String).includes(selCo))return false;
+    if(selCl&&String(r.client_fk)!==selCl)return false;
+    if(selSec&&String(r.sector_id)!==selSec)return false;
+    if(selSap&&r.codeaffaire!==selSap)return false;
+    if(selType&&r.training_type!==selType)return false;
+    return true;
+  });
+}
+
+function getStFilteredRecs(){
+  const selCo=document.getElementById('stCoFilter')?.value||'';
+  const selCl=document.getElementById('stClientFilter')?.value||'';
+  const selSec=document.getElementById('stSecFilter')?.value||'';
+  const selSap=document.getElementById('stSapFilter')?.value||'';
+  return allRec.filter(r=>{
+    if(r.done)return false;
+    if(selCo&&!(r.company_ids||[]).map(String).includes(selCo))return false;
+    if(selCl&&String(r.client_fk)!==selCl)return false;
+    if(selSec&&String(r.sector_id)!==selSec)return false;
+    if(selSap&&r.codeaffaire!==selSap)return false;
+    return true;
+  });
+}
+
+function _syncFilters(){
+  const cos=[...new Set(allRec.flatMap(r=>r.company_ids||[]).map(String))].map(id=>{const c=allCo.find(x=>String(x.id)===id);return c?[String(c.id),c.name]:null;}).filter(Boolean).sort((a,b)=>a[1].localeCompare(b[1]));
+  const cls=[...new Map(allRec.filter(r=>r.client_fk&&r.client).map(r=>[String(r.client_fk),r.client])).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
+  const secs=[...new Map(allRec.filter(r=>r.sector_id).map(r=>{const s=allSec.find(x=>String(x.id)===String(r.sector_id));return s?[String(s.id),s.Name]:null;}).filter(Boolean)).entries()].sort((a,b)=>a[1].localeCompare(b[1]));
+  const saps=[...new Set(allRec.map(r=>r.codeaffaire).filter(Boolean))].sort().map(v=>[v,v]);
+  ['dash','st'].forEach(p=>{
+    _populateFilter(p+'CoFilter',cos);
+    _populateFilter(p+'ClientFilter',cls);
+    _populateFilter(p+'SecFilter',secs);
+    _populateFilter(p+'SapFilter',saps);
+  });
+}
+
+// Dashboard
+function renderDash(){
+  const el=document.getElementById('dashDate');if(el)el.textContent=nowLabel;
+  _syncFilters();
+  const recs=getFilteredRecs();
+  document.getElementById('kpi-total').textContent=recs.length;
+  document.getElementById('kpi-active').textContent=recs.filter(r=>isInRange(r)&&!r.done).length;
+  document.getElementById('kpi-upcoming').textContent=recs.filter(isUpcoming).length;
+  document.getElementById('kpi-done').textContent=recs.filter(r=>r.done).length;
+  renderBar('chart-cl',groupBy(recs,r=>[r.client||'—']),'var(--purple)');
+  const typeLabels={'online':'VISIO','presential-internal':'Presential — internal','presential-client':'Presential — client'};
+  renderBar('chart-type',groupBy(recs,r=>[(typeLabels[r.training_type]||r.training_type||'—')]),'var(--purple-v)');
+  const act=recs.filter(isInRange);
+  const cnt=document.getElementById('dashCnt');if(cnt)cnt.textContent=`${act.length} record${act.length!==1?'s':''}`;
+  const tbl=document.getElementById('dashTbl');
+  if(tbl){
+    if(!act.length){tbl.innerHTML='<div style="padding:24px;text-align:center;color:var(--ink3);background:var(--white);border-radius:10px;font-size:13px;">No active training sessions today</div>';}
+    else{tbl.innerHTML=`<table class="act-table"><thead><tr><th>Mission Name</th><th>Client</th><th>Brand</th><th>Sector / Store</th><th>Type</th><th>Dates</th><th></th></tr></thead><tbody>`+act.map(r=>`<tr onclick="switchTab(1);loadRec(${r.id})"><td style="font-weight:600;">${esc(r.mission_name||'—')}</td><td>${esc(r.client||'—')}</td><td>${esc(r.brand||'—')}</td><td>${esc((allSec.find(s=>String(s.id)===String(r.sector_id))||{}).Name||'—')} / ${esc(r.store||'—')}</td><td>${esc({'online':'VISIO','presential-internal':'Pres. internal','presential-client':'Pres. client'}[r.training_type]||'—')}</td><td style="font-size:11px;font-family:'DM Mono',monospace;">${fd(r.startdate)} → ${fd(r.enddate)}</td><td><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--ink3)"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></td></tr>`).join('')+'</tbody></table>';}
+  }
+}
+function clearDashFilters(){['dashCoFilter','dashClientFilter','dashSecFilter','dashSapFilter','dashTypeFilter'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});renderDash();}
+function clearStFilters(){['stCoFilter','stClientFilter','stSecFilter','stSapFilter'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});renderStatusLanding();}
+function groupBy(arr,fn){const m={};arr.forEach(r=>{(fn(r)||[]).flat().forEach(k=>{m[k]=(m[k]||0)+1;});});return Object.entries(m).sort((a,b)=>b[1]-a[1]);}
+function renderBar(id,entries,color){const el=document.getElementById(id);if(!el)return;const top=entries.slice(0,7);if(!top.length){el.innerHTML='<div style="font-size:12px;color:var(--ink3);font-style:italic;">No data yet.</div>';return;}const mx=top[0][1]||1;el.innerHTML=top.map(([n,c])=>`<div class="bar-row"><div class="bar-lbl" title="${esc(n)}">${esc(n==='—'?'Unknown':n)}</div><div class="bar-track"><div class="bar-fill" style="width:${Math.round(c/mx*100)}%;background:${color};opacity:.75;"></div></div><div class="bar-num">${c}</div></div>`).join('');}
+
+// Sidebar
+function renderSidebar(){
+  const q=(document.getElementById('sbSearch')?.value||'').toLowerCase();
+  const f=q?allRec.filter(r=>(r.mission_name||r.client||r.brand||'').toLowerCase().includes(q)):allRec;
+  const el=document.getElementById('efList');
+  if(!f.length){el.innerHTML='<div class="ef-empty-li">No records yet.</div>';return;}
+  el.innerHTML=f.map(r=>`<div class="ef-li${curRec&&curRec.id===r.id?' sel':''}${isInRange(r)?' cur':''}" onclick="loadRec(${r.id})"><div class="ef-li-title">${esc(r.mission_name||'#'+r.id)}</div><div class="ef-li-sub">${esc(r.client||'—')} · ${esc(r.brand||'—')}</div><div class="ef-li-dates">${fd(r.startdate)||'—'} → ${fd(r.enddate)||'—'}</div></div>`).join('');
+}
+function filterSidebar(){renderSidebar();}
+
+// Landing
+function renderLanding(){
+  const el=document.getElementById('efDate');if(el)el.textContent=nowLabel;
+  const act=allRec.filter(isInRange),tbl=document.getElementById('efActiveTbl');if(!tbl)return;
+  if(!act.length){tbl.innerHTML='<div style="padding:28px;text-align:center;color:var(--ink3);background:var(--white);border-radius:10px;border:2px dashed var(--line);font-size:13px;">No active training sessions today</div>';return;}
+  tbl.innerHTML=`<table class="act-table"><thead><tr><th>Mission Name</th><th>Client</th><th>Brand</th><th>Sector / Store</th><th>Type</th><th>Dates</th><th></th></tr></thead><tbody>`+act.map(r=>`<tr onclick="loadRec(${r.id})"><td style="font-weight:600;">${esc(r.mission_name||'—')}</td><td>${esc(r.client||'—')}</td><td>${esc(r.brand||'—')}</td><td>${esc((allSec.find(s=>String(s.id)===String(r.sector_id))||{}).Name||'—')} / ${esc(r.store||'—')}</td><td>${esc({'online':'VISIO','presential-internal':'Pres. internal','presential-client':'Pres. client'}[r.training_type]||'—')}</td><td style="font-size:11px;font-family:'DM Mono',monospace;">${fd(r.startdate)} → ${fd(r.enddate)}</td><td><svg width="14" height="14" viewBox="0 0 24 24" fill="var(--ink3)"><path d="M10 6L8.59 7.41 13.17 12l-4.58 4.59L10 18l6-6z"/></svg></td></tr>`).join('')+'</tbody></table>';
+}
+
+// Form
+function newRecord(){curRec=null;isNew=true;clearForm();document.getElementById('formTitle').textContent='New Record';document.getElementById('statusBadge').textContent='NEW';document.getElementById('statusBadge').className='badge new-b';showPanel('edit');renderSidebar();}
+async function loadRec(id){try{const rows=await sbGet(TBL+'?id=eq.'+id+'&limit=1');if(!rows.length)return;curRec=rows[0];isNew=false;fillForm(curRec);showPanel('edit');renderSidebar();}catch(e){toast('Error loading','error');}}
+
+function clearForm(){
+  ['f-code','f-title','f-startdate','f-enddate','f-train-hours'].forEach(id=>{const el=document.getElementById(id);if(el)el.value='';});
+  ['company','client','brand','contact','sector','store'].forEach(k=>{ms[k].selected=[];renderTags(k)});
+  resetAllYN();brandFormat=null;
+  document.getElementById('yn-format-online').className='yn-btn';
+  document.getElementById('yn-format-presential').className='yn-btn';
+  show('brand-format-wrap',false);
+}
+
+function fillForm(r){
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+  set('f-title',r.mission_name);set('f-code',r.codeaffaire);
+  set('f-startdate',r.startdate);set('f-enddate',r.enddate);
+  set('f-train-hours',r.training_hours);
+  loadYN('trainrm',r.hours_removed_gi);
+  loadYN('brand',r.brand_provides);
+  if(r.brand_provides===true){show('brand-format-wrap',true);if(r.brand_format)setBrandFormat(r.brand_format);}
+  ms.company.selected=(r.company_ids||[]).map(id=>ms.company.all.find(o=>String(o.id)===String(id))).filter(Boolean);renderTags('company');applyCompanyFilter(false);
+  const cOpt=r.client_fk?ms.client.all.find(o=>String(o.id)===String(r.client_fk)):null;ms.client.selected=cOpt?[cOpt]:[];renderTags('client');applyClientFilter(false);
+  ms.brand.selected=(r.brand_ids||[]).map(id=>ms.brand.all.find(o=>String(o.id)===String(id))).filter(Boolean);renderTags('brand');
+  ms.contact.selected=(r.contact_ids||[]).map(id=>ms.contact.all.find(o=>String(o.id)===String(id))).filter(Boolean);renderTags('contact');
+  const secOpt=r.sector_id?ms.sector.all.find(o=>String(o.id)===String(r.sector_id)):null;ms.sector.selected=secOpt?[secOpt]:[];renderTags('sector');applySectorFilter(false);
+  ms.store.selected=(r.store_ids||[]).map(id=>ms.store.all.find(o=>String(o.id)===String(id))).filter(Boolean);renderTags('store');
+  document.getElementById('formTitle').textContent=r.mission_name||'Record #'+r.id;
+  document.getElementById('statusBadge').textContent='EXISTING';document.getElementById('statusBadge').className='badge exist-b';
+}
+
+function cancelEdit(){if(isNew){curRec=null;showPanel('landing');}else if(curRec){fillForm(curRec);showPanel('edit');}}
+function enterEdit(){showPanel('edit');}
+
+// Save
+async function saveRecord(){
+  const g=id=>{const el=document.getElementById(id);return el?el.value.trim()||null:null;};
+  const ti=v=>{const n=parseInt(v);return isNaN(n)?null:n;};
+  const tia=arr=>arr.length?arr.map(o=>ti(o.id)).filter(n=>n!==null):null;
+  const cOpt=ms.client.selected[0]||null,secOpt=ms.sector.selected[0]||null,trOpt=ms.trainer.selected[0]||null;
+  const brandLabel=ms.brand.selected.map(o=>o.label).join(', ')||null;
+  const storeLabel=ms.store.selected.map(o=>o.label).join(', ')||null;
+  const contactStatus_v=contactStatus!=='notdone'?contactStatus:null;
+
+  // Build payload conditionally — ONLY include a key if it has a real value
+  // This prevents PGRST204 errors for any column not yet in the C_Training schema
+  const raw={
+    mission_name:g('f-title'),
+    codeaffaire:g('f-code'),
+    client:cOpt?cOpt.label:null,
+    client_fk:cOpt?ti(cOpt.id):null,
+    brand:brandLabel,
+    brand_ids:ms.brand.selected.length?tia(ms.brand.selected):null,
+    company_ids:ms.company.selected.length?tia(ms.company.selected):null,
+    contact_ids:ms.contact.selected.length?tia(ms.contact.selected):null,
+    train_contact_ids:ms.traincontact.selected.length?tia(ms.traincontact.selected):null,
+    trainer_id:trOpt?ti(trOpt.id):null,
+    sector_id:secOpt?ti(secOpt.id):null,
+    store:storeLabel,
+    store_ids:ms.store.selected.length?tia(ms.store.selected):null,
+    startdate:g('f-startdate'),
+    enddate:g('f-enddate'),
+    training_hours:g('f-train-hours'),
+    hours_removed_gi:YN.trainrm,
+    brand_provides:YN.brand,
+    brand_format:brandFormat,
+  };
+  // Strip ALL falsy values (null, undefined, '', false) — Supabase rejects any key not in schema
+  const payload=Object.fromEntries(Object.entries(raw).filter(([,v])=>v!==null&&v!==undefined&&v!==''&&v!==false));
+  try{
+    showLoad(true);
+    if(isNew){
+      const mx=await sbGet(TBL+'?select=id&order=id.desc&limit=1').catch(()=>[]);
+      payload.id=mx.length?parseInt(mx[0].id)+1:1;
+      payload.createdat=new Date().toISOString();
+      await sbPost(TBL,payload);
+      toast('Record created!','success');
+    }else{
+      await sbPatch(TBL,curRec.id,payload);
+      toast('Record updated!','success');
+    }
+    const sid=isNew?payload.id:parseInt(curRec.id);
+    const fresh=await sbGet(TBL+'?select=*&order=startdate.desc.nullslast,createdat.desc').catch(()=>[]);
+    allRec=filtRec=fresh;
+    const saved=await sbGet(TBL+'?id=eq.'+sid+'&limit=1').catch(()=>[]);
+    curRec=saved[0]||null;isNew=false;
+    renderSidebar();renderDash();renderLanding();if(curRec)showView(curRec);
+  }catch(e){toast('Save failed: '+e.message,'error');}finally{showLoad(false);}
+}
+
+// View
+function showView(r){
+  showPanel('view');
+  document.getElementById('vTitle').textContent=r.mission_name||'Record #'+r.id;
+  const yn=v=>v===true?'<span style="color:var(--green);font-weight:700;">Yes</span>':v===false?'<span style="color:var(--red);font-weight:700;">No</span>':'<span style="color:var(--ink3);font-style:italic;">—</span>';
+  const vf=(l,v,full)=>`<div class="vf${full?' full':''}"><div class="vf-lbl">${l}</div><div class="vf-val${v?'':' empty'}">${v||'—'}</div></div>`;
+  const secN=(allSec.find(s=>String(s.id)===String(r.sector_id))||{}).Name||'—';
+  const storeN=r.store||'—';
+  const trN=(allTr.find(x=>String(x.id)===String(r.trainer_id))||{});
+  const trLabel=trN.firstname?trN.firstname+' '+trN.lastname:'—';
+  const typeLabels={'online':'VISIO','presential-internal':'Presential — internal','presential-client':'Presential — client'};
+  const boLabels={'validated':'Validated','not-validated':'Not Validated'};
+  const statusLabels={'done':'Done','notdone':'Not Done','awaiting':'Awaiting'};
+  // Contact client from entry form with emails
+  const contactHtml=(r.contact_ids||[]).map(id=>{
+    const c=allCon.find(x=>String(x.id)===String(id));
+    if(!c)return'';
+    return`<div style="margin-bottom:4px;">
+      <div style="font-size:12.5px;font-weight:600;">${esc(c.Fullname||'—')}</div>
+      ${c.email?`<div style="font-size:11px;color:var(--ink3);">${esc(c.email)}</div>`:''}
+    </div>`;
+  }).join('')||'—';
+  const trainContactNames=ms.traincontact.selected.map(o=>o.label).join(', ')||'—';
+  let extraHtml='';
+  if(r.training_type==='online'){extraHtml=`<div class="vf"><div class="vf-lbl">Visio Link</div><div class="vf-val">${r.visio_link?`<a href="${esc(r.visio_link)}" target="_blank" style="color:var(--blue);">${esc(r.visio_link)}</a>`:'—'}</div></div><div class="vf"><div class="vf-lbl">Date / Time</div><div class="vf-val">${esc(fd(r.online_date)||'—')} ${r.online_time?'· '+trimTime(r.online_time):''}</div></div>`;}
+  else if(r.training_type==='presential-internal'){extraHtml=`<div class="vf full"><div class="vf-lbl">Internal Venue</div><div class="vf-val">${esc(r.internal_address||'—')}</div></div><div class="vf"><div class="vf-lbl">Date / Time</div><div class="vf-val">${esc(fd(r.internal_date)||'—')} ${r.internal_time?'· '+trimTime(r.internal_time):''}</div></div>`;}
+  else if(r.training_type==='presential-client'){extraHtml=`<div class="vf full"><div class="vf-lbl">Client Venue</div><div class="vf-val">${esc(r.client_address||'—')}</div></div><div class="vf"><div class="vf-lbl">Date / Time</div><div class="vf-val">${esc(fd(r.client_date)||'—')} ${r.client_time?'· '+trimTime(r.client_time):''}</div></div>`;}
+  document.getElementById('vBody').innerHTML=`
+    <div class="v-sec blue">General Information</div><div class="v-grid">
+      ${vf('Company',ms.company.selected.map(o=>o.label).join(', '))}${vf('Code Affaire',r.codeaffaire)}
+      ${vf('Client',r.client)}${vf('Brand',r.brand)}
+      ${vf('Sector / Airport',secN)}${vf('Store',storeN)}
+      ${vf('Start',fd(r.startdate))}${vf('End',fd(r.enddate))}
+      ${vf('Mission Name',r.mission_name,true)}
+      <div class="vf full"><div class="vf-lbl">Contact Client</div><div class="vf-val">${contactHtml}</div></div>
+    </div>
+    <div class="v-sec">Training</div><div class="v-grid">
+      ${vf('Training Hours',r.training_hours)}
+      <div class="vf"><div class="vf-lbl">Hours Removed from GI</div><div class="vf-val">${yn(r.hours_removed_gi)}</div></div>
+      ${vf('Trainer',trLabel)}
+      <div class="vf"><div class="vf-lbl">Brand Provides Training</div><div class="vf-val">${yn(r.brand_provides)}${r.brand_provides&&r.brand_format?' <span style="font-size:11px;background:var(--purple-l);color:var(--purple);padding:1px 7px;border-radius:10px;font-weight:600;">'+(r.brand_format==='online'?'Online':'Presential')+'</span>':''}</div></div>
+      ${vf('Training Contacts',trainContactNames)}
+      ${vf('Client Contact Status',statusLabels[r.contact_status]||'—')}
+      ${r.contact_status==='done'?vf('Contact Date',fd(r.contact_date)):''}
+      ${r.contact_status==='awaiting'?vf('Comments',r.contact_comments):''}
+      ${vf('Training Type',typeLabels[r.training_type]||'—')}
+      ${extraHtml}
+      ${vf('PA Notes',r.pa_notes,true)}
+      ${r.pa_notes?vf('PA Date',fd(r.pa_date))+''+vf('PA Link GI',r.pa_link?`<a href="${esc(r.pa_link)}" target="_blank" style="color:var(--blue);">${esc(r.pa_link)}</a>`:'—'):''}
+      ${vf('Backoffice',boLabels[r.backoffice_status]||'—')}
+      ${r.backoffice_status==='validated'?vf('Validation Date',fd(r.backoffice_date)):''}
+      ${vf('General Comments',r.generalnotes,true)}
+    </div>`;
+}
+
+function renderStatusPage(){
+  renderStatusSidebar();
+  renderStatusLanding();
+}
+
+function renderStatusSidebar(){
+  const q=(document.getElementById('stSearch')?.value||'').toLowerCase();
+  const done=allRec.filter(r=>r.done===true);
+  const f=q?done.filter(r=>(r.mission_name||r.client||r.brand||'').toLowerCase().includes(q)):done;
+  const el=document.getElementById('stList');if(!el)return;
+  if(!f.length){
+    el.innerHTML='<div class="ef-empty-li" style="padding:16px;font-size:11.5px;color:var(--ink3);text-align:center;">No completed trainings yet.<br><span style="font-size:10.5px;opacity:.7;">Mark active sessions as done.</span></div>';
+    return;
+  }
+  el.innerHTML=`<div style="padding:5px 14px 3px;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--ink3);background:var(--bg);border-bottom:1px solid var(--line2);">Done (${f.length})</div>`+
+  f.map(r=>`<div class="ef-li${curStatus&&curStatus.id===r.id?' sel':''}" onclick="loadStatusInline(${r.id})">
+    <div class="ef-li-title" style="display:flex;align-items:center;gap:6px;">
+      <span style="background:var(--green-l);color:var(--green);font-size:10px;font-weight:700;padding:1px 6px;border-radius:3px;">✓ DONE</span>
+      ${esc(r.mission_name||'#'+r.id)}
+    </div>
+    <div class="ef-li-sub">${esc(r.client||'—')} · ${esc(r.brand||'—')}</div>
+    <div class="ef-li-dates">${r.done_by?`<span style="color:var(--green);">By ${esc(r.done_by)}</span>`:''} ${fd(r.startdate)||'—'} → ${fd(r.enddate)||'—'}</div>
+  </div>`).join('');
+}
+function filterStatusSidebar(){renderStatusSidebar();}
+
+// Inline cell helpers
+function stCell(content,cls=''){return`<td style="padding:6px 10px;border-bottom:1px solid var(--line2);vertical-align:top;${cls}">${content}</td>`;}
+
+function trainerCell(r){
+  const trN=(allTr.find(x=>String(x.id)===String(r.trainer_id))||{});
+  const label=trN.firstname?trN.firstname+' '+trN.lastname:'';
+  const opts=allTr.map(t=>`<option value="${t.id}" ${String(t.id)===String(r.trainer_id)?'selected':''}>${esc(t.firstname+' '+t.lastname)}</option>`).join('');
+  return`<select onchange="patchField(${r.id},'trainer_id',this.value?parseInt(this.value):null)"
+    style="width:100%;border:1px solid var(--line);border-radius:5px;padding:4px 6px;font-family:inherit;font-size:12px;background:var(--white);outline:none;cursor:pointer;">
+    <option value="">— Select —</option>${opts}
+  </select>${label?`<div style="font-size:11px;color:var(--ink3);margin-top:3px;">${esc(label)}</div>`:''}`;
+}
+
+function trainingTypeCell(r){
+  const types=[
+    {v:'online',              label:'VISIO'},
+    {v:'presential-internal', label:'Presential — internal'},
+    {v:'presential-client',   label:'Presential — client'},
+  ];
+  const t=r.training_type||'';
+  const opts=types.map(x=>`<option value="${x.v}" ${t===x.v?'selected':''}>${x.label}</option>`).join('');
+  const extra=t==='online'?`<div style="margin-top:5px;display:flex;flex-direction:column;gap:4px;">
+      <div style="display:flex;align-items:center;gap:4px;">
+        <input type="url" value="${esc(r.visio_link||'')}" placeholder="Visio link…" onchange="patchField(${r.id},'visio_link',this.value||null)" style="flex:1;border:1px solid var(--line);border-radius:5px;padding:3px 7px;font-family:inherit;font-size:11px;outline:none;">
+        ${r.visio_link?`<button onclick="openUrl('${_reg(r.visio_link)}')" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--blue-l);border-radius:5px;border:none;cursor:pointer;" title="Open link"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--blue)"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></button>`:''}
+      </div>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:4px;"><span style="font-size:10px;color:var(--ink3);">Date</span><input type="date" value="${r.online_date||''}" onchange="patchField(${r.id},'online_date',this.value||null)" style="border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span style="font-size:10px;color:var(--ink3);">Time</span><input type="time" value="${r.online_time||''}" onchange="patchField(${r.id},'online_time',this.value||null)" style="border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;"></div>
+      </div></div>`
+  :t==='presential-internal'?`<div style="margin-top:5px;display:flex;flex-direction:column;gap:4px;">
+      <input type="text" value="${esc(r.internal_address||'')}" placeholder="Internal venue / address…" onchange="patchField(${r.id},'internal_address',this.value||null)" style="width:100%;border:1px solid var(--line);border-radius:5px;padding:3px 7px;font-family:inherit;font-size:11px;outline:none;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:4px;"><span style="font-size:10px;color:var(--ink3);">Date</span><input type="date" value="${r.internal_date||''}" onchange="patchField(${r.id},'internal_date',this.value||null)" style="border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span style="font-size:10px;color:var(--ink3);">Time</span><input type="time" value="${r.internal_time||''}" onchange="patchField(${r.id},'internal_time',this.value||null)" style="border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;"></div>
+      </div></div>`
+  :t==='presential-client'?`<div style="margin-top:5px;display:flex;flex-direction:column;gap:4px;">
+      <input type="text" value="${esc(r.client_address||'')}" placeholder="Client venue / address…" onchange="patchField(${r.id},'client_address',this.value||null)" style="width:100%;border:1px solid var(--line);border-radius:5px;padding:3px 7px;font-family:inherit;font-size:11px;outline:none;">
+      <div style="display:flex;gap:6px;flex-wrap:wrap;">
+        <div style="display:flex;align-items:center;gap:4px;"><span style="font-size:10px;color:var(--ink3);">Date</span><input type="date" value="${r.client_date||''}" onchange="patchField(${r.id},'client_date',this.value||null)" style="border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;"></div>
+        <div style="display:flex;align-items:center;gap:4px;"><span style="font-size:10px;color:var(--ink3);">Time</span><input type="time" value="${r.client_time||''}" onchange="patchField(${r.id},'client_time',this.value||null)" style="border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;"></div>
+      </div></div>`:'';
+  return`<select onchange="patchField(${r.id},'training_type',this.value||null).then(()=>renderStatusLanding())"
+    style="width:100%;border:1px solid var(--line);border-radius:5px;padding:4px 6px;font-family:inherit;font-size:12px;background:var(--white);outline:none;cursor:pointer;">
+    <option value="">— Select —</option>${opts}
+  </select>${extra}`;
+}
+
+function trainContactCell(r, entryContacts){
+  if(!entryContacts||!entryContacts.length){
+    return`<div style="font-size:11px;color:var(--ink3);font-style:italic;">No contacts set in Entry Form</div>`;
+  }
+  const trainIds=(r.train_contact_ids||[]).map(String);
+  return entryContacts.map(c=>{
+    const sel=trainIds.includes(String(c.id));
+    return`<label style="display:flex;align-items:flex-start;gap:6px;padding:4px 0;cursor:pointer;border-bottom:1px solid var(--line2);">
+      <input type="checkbox" ${sel?'checked':''} onchange="toggleTrainContact(${r.id},${c.id},this.checked)"
+        style="width:13px;height:13px;margin-top:2px;accent-color:var(--purple);cursor:pointer;flex-shrink:0;">
+      <div>
+        <div style="font-size:12px;font-weight:${sel?'600':'400'};color:${sel?'var(--purple-d)':'var(--ink2)'};">${esc(c.Fullname||'—')}</div>
+        ${c.email?`<a href="mailto:${esc(c.email)}" style="font-size:10.5px;color:var(--blue);text-decoration:none;" onmouseover="this.style.textDecoration='underline'" onmouseout="this.style.textDecoration='none'">${esc(c.email)}</a>`:''}
+      </div>
+    </label>`;
+  }).join('');
+}
+
+function contactStatusCell(r){
+  const s=r.contact_status||'notdone';
+  const chips=[
+    {v:'done',   label:'Done',     cls:'background:var(--green-l);color:var(--green);border-color:var(--green);'},
+    {v:'notdone',label:'Not Done', cls:'background:var(--red-l);color:var(--red);border-color:var(--red);'},
+    {v:'awaiting',label:'Awaiting',cls:'background:var(--amber-l);color:var(--amber);border-color:#d97706;'},
+  ];
+  const btns=chips.map(c=>`<button onclick="patchField(${r.id},'contact_status','${c.v}').then(()=>renderStatusLanding())"
+    style="padding:3px 10px;border-radius:20px;border:1.5px solid var(--line);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;${s===c.v?c.cls:'background:transparent;color:var(--ink3);'}">${c.label}</button>`).join('');
+  const dateField=s==='done'?`<div style="margin-top:5px;display:flex;align-items:center;gap:5px;"><span style="font-size:10px;color:var(--ink3);">Date</span><input type="date" value="${r.contact_date||''}" onchange="patchField(${r.id},'contact_date',this.value||null)" style="border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;"></div>`:'';
+  const commentField=s==='awaiting'?`<div style="margin-top:5px;"><input type="text" value="${esc(r.contact_comments||'')}" placeholder="Comment…" onchange="patchField(${r.id},'contact_comments',this.value||null)" style="width:100%;border:1px solid var(--line);border-radius:5px;padding:3px 7px;font-family:inherit;font-size:11px;outline:none;"></div>`:'';
+  return`<div style="display:flex;gap:4px;flex-wrap:wrap;">${btns}</div>${dateField}${commentField}`;
+}
+
+function paCell(r){
+  const hasPA=r.pa_notes&&r.pa_notes.trim();
+  return`<div>
+    <input type="text" value="${esc(r.pa_notes||'')}" placeholder="Add PA notes…"
+      onchange="patchField(${r.id},'pa_notes',this.value||null).then(()=>renderStatusLanding())"
+      style="width:100%;min-width:140px;border:1px solid var(--line);border-radius:5px;padding:3px 7px;font-family:inherit;font-size:11.5px;outline:none;">
+    ${hasPA?`<div style="margin-top:4px;display:flex;flex-direction:column;gap:5px;">
+      <div style="display:flex;align-items:center;gap:4px;"><span style="font-size:10px;color:var(--ink3);white-space:nowrap;">Date</span><input type="date" value="${r.pa_date||''}" onchange="patchField(${r.id},'pa_date',this.value||null)" style="flex:1;border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;"></div>
+      <div style="display:flex;align-items:center;gap:4px;">
+        <span style="font-size:10px;color:var(--ink3);white-space:nowrap;">Link GI</span>
+        <input type="url" value="${esc(r.pa_link||'')}" placeholder="https://…" onchange="patchField(${r.id},'pa_link',this.value||null)" style="flex:1;min-width:80px;border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;">
+        ${r.pa_link?`<button onclick="openUrl('${_reg(r.pa_link)}')" style="flex-shrink:0;display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;background:var(--blue-l);border-radius:5px;border:none;cursor:pointer;" title="Open link"><svg width="12" height="12" viewBox="0 0 24 24" fill="var(--blue)"><path d="M19 19H5V5h7V3H5a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7h-2v7zM14 3v2h3.59l-9.83 9.83 1.41 1.41L19 6.41V10h2V3h-7z"/></svg></button>`:''}
+      </div>
+    </div>`:''}
+  </div>`;
+}
+
+function backofficeCell(r){
+  const s=r.backoffice_status||'';
+  const chips=[
+    {v:'validated',    label:'✓ Validated',    cls:'background:var(--green-l);color:var(--green);border-color:var(--green);'},
+    {v:'not-validated',label:'✗ Not Validated', cls:'background:var(--red-l);color:var(--red);border-color:var(--red);'},
+  ];
+  const btns=chips.map(c=>`<button onclick="patchField(${r.id},'backoffice_status','${c.v}').then(()=>renderStatusLanding())"
+    style="padding:3px 10px;border-radius:20px;border:1.5px solid var(--line);font-family:inherit;font-size:11px;font-weight:600;cursor:pointer;${s===c.v?c.cls:'background:transparent;color:var(--ink3);'}">${c.label}</button>`).join('');
+  const dateField=s==='validated'?`<div style="margin-top:5px;display:flex;align-items:center;gap:5px;"><span style="font-size:10px;color:var(--ink3);">Validation date</span><input type="date" value="${r.backoffice_date||''}" onchange="patchField(${r.id},'backoffice_date',this.value||null)" style="border:1px solid var(--line);border-radius:5px;padding:2px 6px;font-family:inherit;font-size:11px;outline:none;"></div>`:'';
+  return`<div style="display:flex;gap:4px;flex-wrap:wrap;">${btns}</div>${dateField}`;
+}
+
+function commentsCell(r){
+  return`<textarea placeholder="General comments…" onchange="patchField(${r.id},'generalnotes',this.value||null)"
+    style="width:100%;min-width:160px;border:1px solid var(--line);border-radius:5px;padding:4px 7px;font-family:inherit;font-size:11.5px;outline:none;resize:none;height:52px;">${esc(r.generalnotes||'')}</textarea>`;
+}
+
+async function markAsDone(id){
+  const r=allRec.find(x=>String(x.id)===String(id));
+  if(!r)return;
+  const opts=allTr.map(t=>`<option value="${t.id}">${esc(t.firstname+' '+t.lastname)}</option>`).join('');
+  const modal=document.createElement('div');
+  modal.className='modal-bg';
+  modal.innerHTML=`<div class="modal" style="max-width:380px;">
+    <h3 style="margin-bottom:14px;">Mark as Done</h3>
+    <p style="font-size:12.5px;color:var(--ink3);margin-bottom:14px;">Select the trainer who validated this session:</p>
+    <div class="mfg full" style="margin-bottom:12px;">
+      <label style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);">Trainer / Validator</label>
+      <select class="mfi" id="done-trainer-sel" style="margin-top:6px;appearance:none;background:var(--white) url('data:image/svg+xml,%3Csvg xmlns=%22http://www.w3.org/2000/svg%22 width=%2210%22 height=%226%22%3E%3Cpath d=%22M0 0l5 6 5-6z%22 fill=%22%236b7280%22/%3E%3C/svg%3E') no-repeat right 10px center;">
+        <option value="">— Select —</option>${opts}
+      </select>
+    </div>
+    <div style="border-top:1px solid var(--line);padding-top:12px;margin-bottom:12px;">
+      <div style="font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);margin-bottom:8px;">+ Add new trainer to list</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:8px;">
+        <input type="text" class="mfi" id="done-new-fn" placeholder="First name">
+        <input type="text" class="mfi" id="done-new-ln" placeholder="Last name">
+      </div>
+      <button onclick="addTrainerFromDone()" style="padding:6px 14px;background:var(--purple-l);color:var(--purple);border:1.5px solid var(--purple);border-radius:var(--r);font-family:inherit;font-size:12px;font-weight:700;cursor:pointer;">+ Add &amp; Select</button>
+    </div>
+    <div class="modal-footer">
+      <button class="m-btn secondary" onclick="this.closest('.modal-bg').remove()">Cancel</button>
+      <button class="m-btn primary" onclick="confirmMarkDone(${id})">✓ Confirm Done</button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  document.getElementById('done-trainer-sel').addEventListener('change',function(){
+    if(this.value) confirmMarkDone(id);
+  });
+}
+
+async function addTrainerFromDone(){
+  const fn=document.getElementById('done-new-fn')?.value.trim();
+  const ln=document.getElementById('done-new-ln')?.value.trim();
+  if(!fn||!ln){toast('Enter first and last name','error');return;}
+  try{
+    showLoad(true);
+    const mx=await sbGet('Contacts_Operations?select=id&order=id.desc&limit=1');
+    const newId=mx.length?parseInt(mx[0].id)+1:1;
+    const d={id:newId,firstname:fn,lastname:ln,jobtitle:'Trainer'};
+    await sbPost('Contacts_Operations',d);
+    allTr.push(d);
+    const opt=document.createElement('option');
+    opt.value=newId;opt.textContent=fn+' '+ln;opt.selected=true;
+    const sel=document.getElementById('done-trainer-sel');
+    if(sel)sel.appendChild(opt);
+    document.getElementById('done-new-fn').value='';
+    document.getElementById('done-new-ln').value='';
+    toast('Trainer added!','success');
+  }catch(e){toast('Failed: '+e.message,'error');}finally{showLoad(false);}
+}
+
+async function confirmMarkDone(id){
+  const sel=document.getElementById('done-trainer-sel');
+  const tid=sel?.value;
+  if(!tid){toast('Please select a trainer','error');return;}
+  const tr=allTr.find(t=>String(t.id)===String(tid));
+  const name=tr?tr.firstname+' '+tr.lastname:'';
+  document.querySelector('.modal-bg')?.remove();
+  try{
+    showLoad(true);
+    await sbPatch(TBL,id,{done:true,done_by:name,trainer_id:parseInt(tid),done_at:new Date().toISOString()});
+    const idx=allRec.findIndex(r=>String(r.id)===String(id));
+    if(idx>=0){allRec[idx].done=true;allRec[idx].done_by=name;allRec[idx].trainer_id=parseInt(tid);}
+    toast('Marked as done!','success');
+    renderStatusLanding();renderStatusSidebar();renderDash();
+  }catch(e){toast('Failed: '+e.message,'error');}finally{showLoad(false);}
+}
+
+async function patchField(id,col,val){
+  const payload={};
+  payload[col]=val;
+  try{
+    await sbPatch(TBL,id,payload);
+    const idx=allRec.findIndex(r=>String(r.id)===String(id));
+    if(idx>=0)allRec[idx][col]=val;
+  }catch(e){toast('Save failed: '+e.message,'error');}
+}
+async function toggleTrainContact(recId,contactId,checked){
+  const idx=allRec.findIndex(r=>String(r.id)===String(recId));
+  if(idx<0)return;
+  let ids=[...(allRec[idx].train_contact_ids||[])].map(Number);
+  if(checked){if(!ids.includes(contactId))ids.push(contactId);}
+  else{ids=ids.filter(i=>i!==contactId);}
+  allRec[idx].train_contact_ids=ids;
+  const payload={train_contact_ids:ids.length?ids:null};
+  try{await sbPatch(TBL,recId,payload);}
+  catch(e){toast('Save failed: '+e.message,'error');}
+}
+
+async function patchMulti(id,col,sel){
+  const vals=Array.from(sel.selectedOptions).map(o=>parseInt(o.value)).filter(n=>!isNaN(n));
+  const payload={};
+  payload[col]=vals.length?vals:null;
+  try{
+    await sbPatch(TBL,id,payload);
+    const idx=allRec.findIndex(r=>String(r.id)===String(id));
+    if(idx>=0)allRec[idx][col]=vals.length?vals:null;
+  }catch(e){toast('Save failed: '+e.message,'error');}
+}
+
+async function loadStatusInline(id){
+  // just scroll/highlight — data already in allRec
+  curStatus=allRec.find(r=>String(r.id)===String(id))||null;
+  renderStatusSidebar();
+  // show the form panel for non-active records
+  const r=curStatus;if(!r)return;
+  if(!isInRange(r)){
+    showStatusPanel('form');
+    fillStatusForm(r);
+  }
+}
+
+function renderStatusLanding(){
+  const recs=getStFilteredRecs();
+  const tbl=document.getElementById('stActiveTbl');if(!tbl)return;
+  showStatusPanel('landing');
+  if(!recs.length){
+    tbl.innerHTML='<div style="padding:28px;text-align:center;color:var(--ink3);background:var(--white);border-radius:10px;border:2px dashed var(--line);font-size:13px;">No records to display</div>';
+    return;
+  }
+
+  const active=recs.filter(r=>isInRange(r));
+  const upcoming=recs.filter(r=>isUpcoming(r));
+  const past=recs.filter(r=>r.enddate&&r.enddate<todayISO&&!isInRange(r)&&!isUpcoming(r));
+
+  // Row colours
+  const rowBg=r=>{
+    if(isInRange(r))  return'background:#f0fdf4;'; // light green
+    if(isUpcoming(r)) return'background:#f7f8fa;';  // light grey
+    return'background:#fefce8;';                    // light yellow (past)
+  };
+
+  const statusPill=r=>{
+    if(isInRange(r))  return`<span style="background:#dcfce7;color:#166534;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;white-space:nowrap;">● Active</span>`;
+    if(isUpcoming(r)) return`<span style="background:#f1f5f9;color:#475569;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;white-space:nowrap;">◌ Upcoming</span>`;
+    return`<span style="background:#fef9c3;color:#854d0e;font-size:10px;font-weight:700;padding:1px 7px;border-radius:10px;white-space:nowrap;">◷ Past</span>`;
+  };
+
+  const headerStyle='padding:7px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--ink3);background:var(--bg);border-bottom:2px solid var(--line);white-space:nowrap;';
+  const today=`${new Date().getFullYear()} - ${String(new Date().getMonth()+1).padStart(2,'0')} - ${String(new Date().getDate()).padStart(2,'0')}`;
+
+  let html=`<div style="display:flex;gap:10px;margin-bottom:12px;flex-wrap:wrap;">
+    <span style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;"><span style="width:12px;height:12px;border-radius:3px;background:#dcfce7;display:inline-block;border:1px solid #86efac;"></span>Active (${active.length})</span>
+    <span style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;"><span style="width:12px;height:12px;border-radius:3px;background:#f1f5f9;display:inline-block;border:1px solid #cbd5e1;"></span>Upcoming (${upcoming.length})</span>
+    <span style="display:inline-flex;align-items:center;gap:5px;font-size:11.5px;font-weight:600;"><span style="width:12px;height:12px;border-radius:3px;background:#fef9c3;display:inline-block;border:1px solid #fde047;"></span>Past (${past.length})</span>
+  </div>
+  <div style="background:var(--blue);color:#fff;padding:6px 14px;font-size:11px;font-weight:700;border-radius:8px 8px 0 0;letter-spacing:.04em;">
+    ALL RECORDS — TODAY IS ${today} — ${recs.length} total
+  </div>
+  <div style="overflow-x:auto;border:1px solid var(--line);border-top:none;border-radius:0 0 8px 8px;background:var(--white);">
+  <table style="width:100%;border-collapse:collapse;min-width:900px;">
+    <thead><tr>
+      <th style="${headerStyle}min-width:180px;">Mission / Client</th>
+      <th style="${headerStyle}min-width:180px;">Type of Training</th>
+      <th style="${headerStyle}min-width:130px;">Trainer</th>
+      <th style="${headerStyle}min-width:150px;">Contact Client</th>
+      <th style="${headerStyle}min-width:200px;">Contact Status</th>
+      <th style="${headerStyle}min-width:120px;">Email</th>
+      <th style="${headerStyle}min-width:200px;">PA</th>
+      <th style="${headerStyle}min-width:200px;">Backoffice</th>
+      <th style="${headerStyle}min-width:180px;">Comments</th>
+      <th style="${headerStyle}min-width:140px;">GI Mission ID</th>
+    </tr></thead>
+    <tbody>`;
+
+  recs.forEach(r=>{
+    // Contacts from entry form (contact_ids) — for Contact Client column reference only
+    const entryContacts=(r.contact_ids||[]).map(id=>{const c=allCon.find(x=>String(x.id)===String(id));return c||null;}).filter(Boolean);
+    // Colour left border per status
+    const borderLeft=isInRange(r)?'border-left:4px solid #86efac;':isUpcoming(r)?'border-left:4px solid #cbd5e1;':'border-left:4px solid #fde047;';
+    html+=`<tr style="${rowBg(r)}${borderLeft}">
+      ${stCell(`<div style="font-weight:800;font-size:13px;line-height:1.2;margin-bottom:3px;">${esc(r.mission_name||'—')}</div>
+        <div style="margin-bottom:4px;"><span style="font-weight:700;font-size:11px;color:var(--ink2);">${esc(r.client||'—')}</span><span style="font-size:11px;color:var(--ink3);"> · </span><span style="font-weight:600;font-size:11px;color:var(--ink3);">${esc(r.brand||'—')}</span></div>
+        ${r.codeaffaire?`<div style="font-size:10.5px;color:var(--ink3);font-family:'DM Mono',monospace;margin-bottom:4px;">${esc(r.codeaffaire)}</div>`:''}
+        <div style="font-size:10.5px;color:var(--ink3);font-family:'DM Mono',monospace;display:flex;flex-direction:column;gap:1px;">
+          <span>▶ ${fd(r.startdate)||'—'}</span>
+          <span>■ ${fd(r.enddate)||'—'}</span>
+        </div>
+        ${r.gi_mission_id?`<div style="margin-top:5px;display:flex;align-items:center;gap:4px;"><span style="font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.04em;">GI ID</span><span style="font-size:11px;font-weight:700;color:var(--blue);font-family:'DM Mono',monospace;">${esc(r.gi_mission_id)}</span></div>`:''}`)}
+      ${stCell(trainingTypeCell(r))}
+      ${stCell(trainerCell(r))}
+      ${stCell(trainContactCell(r,entryContacts))}
+      ${stCell(contactStatusCell(r))}
+      ${stCell(`<button onclick="openEmailModal(${r.id})" style="display:inline-flex;align-items:center;gap:5px;padding:6px 12px;background:var(--purple);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:11.5px;font-weight:700;cursor:pointer;white-space:nowrap;width:100%;justify-content:center;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M20 4H4c-1.1 0-2 .9-2 2v12c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+        Generate Email
+      </button>
+      <div style="margin-top:6px;">
+        ${r.email_sent
+          ? `<div style="background:var(--green-l);border-radius:var(--r);padding:5px 8px;font-size:11px;">
+              <span style="color:var(--green);font-weight:700;">✓ Email Sent</span>
+              <div style="color:var(--ink3);font-size:10.5px;margin-top:2px;">${r.email_sent_at?fd(r.email_sent_at.split('T')[0]):''}${r.email_sent_by?' · '+esc(r.email_sent_by):''}</div>
+              <button onclick="patchField(${r.id},'email_sent',false).then(()=>{patchField(${r.id},'email_sent_at',null);patchField(${r.id},'email_sent_by',null).then(()=>renderStatusLanding());})" style="margin-top:4px;font-size:10px;color:var(--ink3);background:none;border:none;cursor:pointer;text-decoration:underline;padding:0;">Undo</button>
+            </div>`
+          : `<button onclick="markEmailSent(${r.id})" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:var(--blue-l);color:var(--blue);border:1.5px solid var(--blue);border-radius:20px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;width:100%;justify-content:center;">
+              ✉ Mark Email Sent
+            </button>`
+        }
+      </div>`)}
+      ${stCell(paCell(r))}
+      ${stCell(backofficeCell(r))}
+      ${stCell(commentsCell(r)+`<div style="margin-top:6px;"><button onclick="markAsDone(${r.id})" style="display:inline-flex;align-items:center;gap:5px;padding:5px 14px;background:var(--green);color:#fff;border:none;border-radius:20px;font-family:inherit;font-size:11px;font-weight:700;cursor:pointer;width:100%;justify-content:center;">✓ Mark as Done</button></div>`)}
+      ${stCell(`<input type="text" value="${esc(r.gi_mission_id||'')}" placeholder="GI Mission ID…" onchange="patchField(${r.id},'gi_mission_id',this.value||null)" style="width:100%;border:1px solid var(--line);border-radius:5px;padding:4px 7px;font-family:'DM Mono',monospace;font-size:12px;outline:none;">`)}
+    </tr>
+    <tr style="background:transparent;"><td colspan="10" style="height:8px;border:none;padding:0;"></td></tr>`;
+  });
+
+  html+=`</tbody></table></div>`;
+  tbl.innerHTML=html;
+}
+
+function showStatusPanel(m){
+  const land=document.getElementById('stLanding'),form=document.getElementById('stFormWrap');
+  if(land)land.style.display=m==='landing'?'block':'none';
+  if(form)form.style.display=m==='form'?'flex':'none';
+}
+
+async function loadStatus(id){
+  try{
+    const rows=await sbGet(TBL+'?id=eq.'+id+'&limit=1');
+    if(!rows.length)return;
+    curStatus=rows[0];
+    fillStatusForm(curStatus);
+    showStatusPanel('form');
+    renderStatusSidebar();
+  }catch(e){toast('Error loading','error');}
+}
+
+function fillStatusForm(r){
+  const set=(id,v)=>{const el=document.getElementById(id);if(el)el.value=v||'';};
+  set('f-contact-date',r.contact_date);
+  set('f-contact-comments',r.contact_comments);
+  set('f-pa',r.pa_notes);
+  set('f-pa-date',r.pa_date);
+  set('f-pa-link',r.pa_link);
+  set('f-backoffice-date',r.backoffice_date);
+  set('f-comments',r.generalnotes);
+  if(r.backoffice_status){document.getElementById('f-backoffice').value=r.backoffice_status;onBackofficeChange();}
+  else{document.getElementById('f-backoffice').value='';show('backoffice-date-wrap',false);}
+  setContactStatus(r.contact_status||'notdone');
+  if(r.pa_notes&&r.pa_notes.trim())show('pa-details-wrap',true);
+  else show('pa-details-wrap',false);
+  const trOpt=r.trainer_id?ms.trainer.all.find(o=>String(o.id)===String(r.trainer_id)):null;
+  ms.trainer.selected=trOpt?[trOpt]:[];renderTags('trainer');
+  ms.traincontact.selected=(r.train_contact_ids||[]).map(id=>ms.traincontact.all.find(o=>String(o.id)===String(id))).filter(Boolean);renderTags('traincontact');
+  document.getElementById('stFormTitle').textContent=r.mission_name||'Record #'+r.id;
+  const badge=document.getElementById('stBadge');
+  if(badge){badge.textContent=isInRange(r)?'ACTIVE':r.enddate<todayISO?'PAST':'UPCOMING';}
+}
+
+async function saveStatus(){
+  if(!curStatus){toast('No record loaded','error');return;}
+  const g=id=>{const el=document.getElementById(id);return el?el.value.trim()||null:null;};
+  const ti=v=>{const n=parseInt(v);return isNaN(n)?null:n;};
+  const tia=arr=>arr.length?arr.map(o=>ti(o.id)).filter(n=>n!==null):null;
+  const trOpt=ms.trainer.selected[0]||null;
+  const contactStatus_v=contactStatus!=='notdone'?contactStatus:null;
+  const raw={
+    trainer_id:trOpt?ti(trOpt.id):null,
+    train_contact_ids:ms.traincontact.selected.length?tia(ms.traincontact.selected):null,
+    contact_status:contactStatus_v,
+    contact_date:g('f-contact-date'),
+    contact_comments:g('f-contact-comments'),
+    pa_notes:g('f-pa'),
+    pa_date:g('f-pa-date'),
+    pa_link:g('f-pa-link'),
+    backoffice_status:document.getElementById('f-backoffice').value||null,
+    backoffice_date:g('f-backoffice-date'),
+    generalnotes:g('f-comments'),
+  };
+  const payload=Object.fromEntries(Object.entries(raw).filter(([,v])=>v!==null&&v!==undefined&&v!==''));
+  try{
+    showLoad(true);
+    await sbPatch(TBL,curStatus.id,payload);
+    toast('Status updated!','success');
+    const fresh=await sbGet(TBL+'?select=*&order=startdate.desc.nullslast,createdat.desc').catch(()=>[]);
+    allRec=filtRec=fresh;
+    const saved=await sbGet(TBL+'?id=eq.'+curStatus.id+'&limit=1').catch(()=>[]);
+    curStatus=saved[0]||null;
+    renderStatusSidebar();renderStatusLanding();renderDash();
+    showStatusPanel('landing');
+  }catch(e){toast('Save failed: '+e.message,'error');}finally{showLoad(false);}
+}
+
+function cancelStatus(){
+  curStatus=null;
+  showStatusPanel('landing');
+  renderStatusSidebar();
+}
+
+// Trainer Modal
+function openTrainerModal(){closeAllDDs();['tr-fn','tr-ln','tr-email'].forEach(id=>document.getElementById(id).value='');document.getElementById('trainerModal').style.display='flex';document.getElementById('tr-fn').focus();}
+function closeTrainerModal(){document.getElementById('trainerModal').style.display='none';}
+async function saveTrainer(){
+  const fn=document.getElementById('tr-fn').value.trim(),ln=document.getElementById('tr-ln').value.trim(),email=document.getElementById('tr-email').value.trim();
+  if(!fn||!ln){toast('First and last name required','error');return;}
+  try{
+    showLoad(true);
+    const mx=await sbGet('Contacts_Operations?select=id&order=id.desc&limit=1');
+    const newId=mx.length?parseInt(mx[0].id)+1:1;
+    const d={id:newId,firstname:fn,lastname:ln,email:email||null,jobtitle:'Trainer'};
+    await sbPost('Contacts_Operations',d);
+    allTr.push(d);
+    const opt={id:newId,label:fn+' '+ln,sub:email||'Trainer',meta:d};
+    ms.trainer.all.push(opt);
+    ms.trainer.selected=[opt];
+    renderTags('trainer');
+    closeTrainerModal();
+    toast('Trainer added!','success');
+  }catch(e){toast('Failed: '+e.message,'error');}finally{showLoad(false);}
+}
+
+// Contact Modal
+function openContactModal(){const cOpt=ms.client.selected[0]||null;document.getElementById('mc-fn').value='';document.getElementById('mc-ln').value='';document.getElementById('mc-email').value='';document.getElementById('mc-client').value=cOpt?cOpt.label:'';document.getElementById('contactModal').style.display='flex';document.getElementById('mc-fn').focus();}
+function closeContactModal(){document.getElementById('contactModal').style.display='none';}
+async function saveContact(){
+  const fn=document.getElementById('mc-fn').value.trim(),ln=document.getElementById('mc-ln').value.trim(),email=document.getElementById('mc-email').value.trim();const cOpt=ms.client.selected[0]||null;
+  if(!fn||!ln){toast('First and last name required','error');return;}
+  try{showLoad(true);const mx=await sbGet('C_contacts?select=id&order=id.desc&limit=1');const newId=mx.length?parseInt(mx[0].id)+1:1;const d={id:newId,Fullname:fn+' '+ln,Fname:fn,Lname:ln,email:email||null,client_id:cOpt?parseInt(cOpt.id):null,active:true};await sbPost('C_contacts',d);allCon.push(d);const opt={id:newId,label:fn+' '+ln,sub:email||'',meta:d};ms.contact.all.push(opt);ms.traincontact.all.push(opt);ms.contact.selected.push(opt);renderTags('contact');closeContactModal();toast('Contact added!','success');}catch(e){toast('Failed: '+e.message,'error');}finally{showLoad(false);}
+}
+
+// Utils
+function toast(msg,type=''){const el=document.getElementById('toast');el.textContent=msg;el.className='toast '+type;el.classList.add('show');setTimeout(()=>el.classList.remove('show'),3200);}
+let lEl=null;
+function showLoad(v){if(v&&!lEl){lEl=document.createElement('div');lEl.className='lov';lEl.innerHTML='<div class="spin"></div>';document.body.appendChild(lEl);}else if(!v&&lEl){lEl.remove();lEl=null;}}
+
+async function refreshAll(){
+  try{
+    showLoad(true);
+    const fresh=await sbGet(TBL+'?select=*&order=startdate.desc.nullslast,createdat.desc').catch(()=>[]);
+    allRec=filtRec=fresh;
+    renderDash();renderSidebar();renderLanding();renderStatusLanding();renderStatusSidebar();
+    toast('Refreshed!','success');
+  }catch(e){toast('Refresh failed: '+e.message,'error');}finally{showLoad(false);}
+}
+
+const trimTime=t=>t?(t.split(':').slice(0,2).join(':')):'';
+
+async function markEmailSent(id){
+  const name=allTr.length?null:null; // just use current date
+  try{
+    const now=new Date().toISOString();
+    await sbPatch(TBL,id,{email_sent:true,email_sent_at:now});
+    const idx=allRec.findIndex(r=>String(r.id)===String(id));
+    if(idx>=0){allRec[idx].email_sent=true;allRec[idx].email_sent_at=now;}
+    toast('Email marked as sent!','success');
+    renderStatusLanding();
+  }catch(e){toast('Failed: '+e.message,'error');}
+}
+
+// ── EMAIL MODAL ──────────────────────────────────────────────────────────────
+let _emailRec=null;
+let _emailShifts=[{from:'09:00',to:'17:00',breakMin:60}];
+const _DAYS_LABEL=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+const _DAYS_DOW=[1,2,3,4,5,6,0];
+
+function openEmailModal(id){
+  _emailRec=allRec.find(r=>String(r.id)===String(id));
+  if(!_emailRec)return;
+  _emailShifts=[{from:'09:00',to:'17:00',days:[1,2,3,4,5,6,0],breakMin:0}];
+  const tr=(allTr.find(x=>String(x.id)===String(_emailRec.trainer_id))||{});
+  const trEmail=tr.email||'';
+  const secN=(allSec.find(s=>String(s.id)===String(_emailRec.sector_id))||{}).Name||'—';
+  const typeLabels={'online':'VISIO','presential-internal':'Presential — internal','presential-client':'Presential — client'};
+  const ttLabel=typeLabels[_emailRec.training_type]||'—';
+  let locationLine='';
+  if(_emailRec.training_type==='online'&&_emailRec.visio_link)locationLine=`<b>Visio:</b> ${_emailRec.visio_link}`;
+  else if(_emailRec.training_type==='presential-internal'&&_emailRec.internal_address)locationLine=`<b>Venue:</b> ${_emailRec.internal_address}`;
+  else if(_emailRec.training_type==='presential-client'&&_emailRec.client_address)locationLine=`<b>Venue:</b> ${_emailRec.client_address}`;
+  const trainingDate=_emailRec.online_date||_emailRec.internal_date||_emailRec.client_date||'';
+  const trainingTime=trimTime(_emailRec.online_time||_emailRec.internal_time||_emailRec.client_time||'');
+  // Init shift: start = trainingTime, end = +1hr, only training day active
+  const shiftFrom=trainingTime||'09:00';
+  const shiftTo=(()=>{const[h,m]=(trainingTime||'09:00').split(':').map(Number);const e=(h+1)*60+m;return`${String(Math.floor(e/60)%24).padStart(2,'0')}:${String(e%60).padStart(2,'0')}`;})();
+  const trainingDow=trainingDate?new Date(trainingDate).getDay():-1;
+  _emailShifts=[{from:shiftFrom,to:shiftTo,days:trainingDow>=0?[trainingDow]:[1,2,3,4,5],breakMin:0}];
+
+  const modal=document.createElement('div');
+  modal.className='modal-bg';
+  modal.id='emailModal';
+  modal.style.alignItems='flex-start';
+  modal.style.paddingTop='20px';
+  modal.innerHTML=`<div class="modal" style="max-width:700px;width:95vw;max-height:90vh;overflow-y:auto;">
+    <h3 style="margin-bottom:4px;">Generate Training Email</h3>
+    <div style="font-size:12px;color:var(--ink3);margin-bottom:16px;">${esc(_emailRec.mission_name||'—')}</div>
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+      <div class="mfg full"><label>To (Trainer email)</label><input type="email" class="mfi" id="em-to" value="${esc(trEmail)}" placeholder="trainer@example.com"></div>
+      <div class="mfg full"><label>Subject</label><input type="text" class="mfi" id="em-subj" value="${esc(_emailRec.mission_name||'Training Brief')}"></div>
+    </div>
+
+    <div style="background:var(--bg);border:1px solid var(--line);border-radius:var(--r);padding:14px;margin-bottom:14px;font-size:12.5px;line-height:1.7;">
+      <div style="font-weight:700;font-size:14px;margin-bottom:4px;">Mission Name: ${esc(_emailRec.mission_name||'—')}</div>
+      <div><b>Client:</b> ${esc(_emailRec.client||'—')} &nbsp;·&nbsp; <b>Brand:</b> ${esc(_emailRec.brand||'—')}</div>
+      ${_emailRec.codeaffaire?`<div><b>SAP Code:</b> ${esc(_emailRec.codeaffaire)}</div>`:''}
+      ${_emailRec.gi_mission_id?`<div><b>GI Mission ID:</b> <span style="font-family:monospace;color:var(--blue);">${esc(_emailRec.gi_mission_id)}</span></div>`:''}
+      <div><b>Sector / Store:</b> ${esc(secN)} / ${esc(_emailRec.store||'—')}</div>
+      <div><b>Dates:</b> ${fd(_emailRec.startdate)} → ${fd(_emailRec.enddate)}</div>
+      <div><b>Type:</b> ${esc(ttLabel)}</div>
+      ${trainingDate?`<div><b>Training Date:</b> ${fd(trainingDate)}${trainingTime?' at '+trainingTime:''}</div>`:''}
+      ${_emailRec.training_hours?`<div><b>Duration:</b> ${esc(_emailRec.training_hours)}</div>`:''}
+    </div>
+
+    <!-- Planning generator -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--purple);margin-bottom:10px;padding-bottom:5px;border-bottom:2px solid var(--purple-l);">Planning Grid (optional)</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px;">
+        <div class="mfg"><label>Start Date</label><input type="date" class="mfi" id="em-sd" value="${trainingDate||''}"></div>
+        <div class="mfg"><label>End Date</label><input type="date" class="mfi" id="em-ed" value="${trainingDate||''}"></div>
+      </div>
+      <div id="em-shifts"></div>
+      <button onclick="emAddShift()" style="display:inline-flex;align-items:center;gap:5px;padding:5px 12px;background:none;border:1.5px dashed var(--line);border-radius:var(--r);font-family:inherit;font-size:12px;font-weight:600;color:var(--ink3);cursor:pointer;margin-bottom:10px;">+ Add Shift</button>
+      <br>
+      <button onclick="emGenPlan()" style="display:inline-flex;align-items:center;gap:6px;padding:7px 16px;background:var(--purple);color:#fff;border:none;border-radius:var(--r);font-family:inherit;font-size:12.5px;font-weight:700;cursor:pointer;">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff"><path d="M17.65 6.35A7.958 7.958 0 0012 4c-4.42 0-7.99 3.58-7.99 8s3.57 8 7.99 8c3.73 0 6.84-2.55 7.73-6h-2.08A5.99 5.99 0 0112 18c-3.31 0-6-2.69-6-6s2.69-6 6-6c1.66 0 3.14.69 4.22 1.78L13 11h7V4l-2.35 2.35z"/></svg>
+        Generate Planning
+      </button>
+      <div id="em-plan" style="margin-top:12px;overflow-x:auto;"></div>
+    </div>
+
+    <!-- Extra notes -->
+    <div class="mfg full" style="margin-bottom:16px;">
+      <label>Additional Notes</label>
+      <textarea class="mfi" id="em-notes" style="height:70px;padding:8px;" placeholder="Any extra info to include in the email…"></textarea>
+    </div>
+
+    <div class="modal-footer">
+      <button class="m-btn secondary" onclick="document.getElementById('emailModal').remove()">Cancel</button>
+      <button class="m-btn primary" onclick="sendTrainingEmail()">
+        <svg width="13" height="13" viewBox="0 0 24 24" fill="#fff" style="margin-right:5px;"><path d="M2.01 21L23 12 2.01 3 2 10l15 2-15 2z"/></svg>
+        Send via Outlook
+      </button>
+    </div>
+  </div>`;
+  document.body.appendChild(modal);
+  emRenderShifts();
+}
+
+function emRenderShifts(){
+  const el=document.getElementById('em-shifts');if(!el)return;
+  el.innerHTML=_emailShifts.map((s,i)=>{
+    const bm=s.breakMin??0;
+    const breakOpts=[0,15,30,45,60,90,120].map(v=>`<option value="${v}" ${bm===v?'selected':''}>${v===0?'No break':v<60?v+'min':v===60?'1hr':(v/60)+'h'}</option>`).join('');
+    const dayBtns=_DAYS_LABEL.map((lbl,di)=>{
+      const dow=_DAYS_DOW[di];
+      const chk=(s.days||[1,2,3,4,5,6,0]).includes(dow);
+      const wk=dow===0||dow===6;
+      return`<label style="display:inline-flex;align-items:center;gap:2px;cursor:pointer;font-size:11px;font-weight:600;padding:2px 6px;border-radius:4px;border:1.5px solid ${chk?(wk?'#d97706':'var(--purple)'):'var(--line)'};background:${chk?(wk?'#fef3c7':'var(--purple-l)'):'transparent'};color:${chk?(wk?'#92510c':'var(--purple)'):'var(--ink3)'};"><input type="checkbox" style="display:none;" ${chk?'checked':''} onchange="emToggleDay(${i},${dow},this.checked)">${lbl}</label>`;
+    }).join('');
+    return`<div style="display:flex;align-items:center;gap:8px;background:var(--bg);border-radius:6px;padding:8px 10px;margin-bottom:8px;flex-wrap:wrap;">
+      <span style="font-size:11px;font-weight:700;color:var(--purple);min-width:52px;">Shift ${i+1}</span>
+      <input type="time" class="mfi" style="width:120px;" value="${s.from}" oninput="_emailShifts[${i}].from=this.value">
+      <input type="time" class="mfi" style="width:120px;" value="${s.to}" oninput="_emailShifts[${i}].to=this.value">
+      <select class="mfi" style="width:110px;" onchange="_emailShifts[${i}].breakMin=parseInt(this.value)">${breakOpts}</select>
+      <div style="display:flex;gap:4px;flex-wrap:wrap;">${dayBtns}</div>
+      ${_emailShifts.length>1?`<button onclick="emRmShift(${i})" style="width:22px;height:22px;border:none;background:none;cursor:pointer;color:var(--red);font-size:16px;display:flex;align-items:center;justify-content:center;border-radius:4px;">×</button>`:''}
+      <button onclick="emDupShift(${i})" style="width:22px;height:22px;border:none;background:var(--blue-l);cursor:pointer;color:var(--blue);font-size:14px;display:flex;align-items:center;justify-content:center;border-radius:4px;" title="Duplicate shift">⧉</button>
+    </div>`;
+  }).join('');
+}
+function emAddShift(){_emailShifts.push({from:'09:00',to:'17:00',days:[1,2,3,4,5,6,0],breakMin:0});emRenderShifts();}
+function emDupShift(i){
+  const n=parseInt(prompt('How many copies?','1'));
+  if(!n||n<1)return;
+  for(let x=0;x<n;x++)_emailShifts.push({..._emailShifts[i],days:[...(_emailShifts[i].days||[1,2,3,4,5])]});
+  emRenderShifts();
+}
+function emRmShift(i){_emailShifts.splice(i,1);emRenderShifts();}
+function emToggleDay(si,dow,chk){
+  if(!_emailShifts[si].days)_emailShifts[si].days=[1,2,3,4,5,6,0];
+  if(chk){if(!_emailShifts[si].days.includes(dow))_emailShifts[si].days.push(dow);}
+  else _emailShifts[si].days=_emailShifts[si].days.filter(d=>d!==dow);
+  emRenderShifts();
+}
+function emCalcH(from,to){
+  if(!from||!to)return 0;
+  const[fh,fm]=from.split(':').map(Number);const[th,tm]=to.split(':').map(Number);
+  let d=(th*60+tm)-(fh*60+fm);if(d<0)d+=1440;return Math.round(d/60*10)/10;
+}
+
+function emGenPlan(){
+  const sd=document.getElementById('em-sd')?.value;
+  const ed=document.getElementById('em-ed')?.value;
+  const el=document.getElementById('em-plan');
+  if(!sd||!ed||!el){toast('Set dates first','error');return;}
+  const vs=_emailShifts.filter(s=>s.from&&s.to);
+  if(!vs.length){toast('Add at least one shift','error');return;}
+  const MONTHS=['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+  const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  const days=[];let cur=new Date(sd);const end=new Date(ed);
+  while(cur<=end){const dow=cur.getDay();days.push({date:cur.toISOString().split('T')[0],dayName:DAYS[dow],day:cur.getDate(),month:cur.getMonth()+1,year:cur.getFullYear(),dow,isWk:dow===0||dow===6});cur.setDate(cur.getDate()+1);}
+  const hs='padding:6px 10px;text-align:left;font-size:10px;font-weight:700;text-transform:uppercase;color:var(--ink3);background:var(--bg);border:1px solid var(--line);white-space:nowrap;';
+  const shHdrs=vs.map((_,i)=>`<th colspan="3" style="${hs}text-align:center;background:${i===0?'var(--purple-l)':'#f5f3ff'};color:var(--purple);">Shift ${i+1}</th>`).join('');
+  const subHdrs=vs.map(()=>`<th style="${hs}">From</th><th style="${hs}">To</th><th style="${hs}">Net</th>`).join('');
+  let totalH=0;
+  const rows=days.map(d=>{
+    const bg=d.isWk?'background:#fef9c3;':'';
+    const dc=d.isWk?'color:#92400e;font-weight:700;':'';
+    const cols=vs.map(s=>{
+      const active=(s.days||[0,1,2,3,4,5,6]).includes(d.dow);
+      if(!active)return`<td style="border:1px solid var(--line);text-align:center;color:#cbd5e1;${bg}">—</td><td style="border:1px solid var(--line);text-align:center;color:#cbd5e1;${bg}">—</td><td style="border:1px solid var(--line);text-align:center;color:#cbd5e1;${bg}">—</td>`;
+      const net=Math.max(0,emCalcH(s.from,s.to)-((s.breakMin??60)/60));totalH+=net;
+      return`<td style="border:1px solid var(--line);font-family:monospace;font-size:11.5px;padding:4px 8px;text-align:center;${bg}">${s.from}</td><td style="border:1px solid var(--line);font-family:monospace;font-size:11.5px;padding:4px 8px;text-align:center;${bg}">${s.to}</td><td style="border:1px solid var(--line);font-size:11.5px;padding:4px 8px;text-align:center;${bg}">${Math.round(net*10)/10}h</td>`;
+    }).join('');
+    return`<tr><td style="border:1px solid var(--line);padding:4px 10px;font-size:12px;${bg}${dc}">${d.dayName} ${String(d.day).padStart(2,'0')}/${String(d.month).padStart(2,'0')}/${d.year}</td>${cols}</tr>`;
+  }).join('');
+  totalH=Math.round(totalH*10)/10;
+  el.innerHTML=`<table style="border-collapse:collapse;width:100%;font-family:'DM Sans',sans-serif;min-width:400px;">
+    <thead><tr><th style="${hs}min-width:150px;">Day</th>${shHdrs}</tr><tr><th style="${hs}"></th>${subHdrs}</tr></thead>
+    <tbody>${rows}</tbody>
+    <tfoot><tr><td colspan="99" style="background:var(--purple);color:#fff;font-weight:700;font-size:12px;padding:8px 12px;text-align:right;">Total: ${totalH}h net</td></tr></tfoot>
+  </table>`;
+}
+
+function sendTrainingEmail(){
+  const r=_emailRec;if(!r)return;
+  const to=document.getElementById('em-to')?.value||'';
+  const subj=document.getElementById('em-subj')?.value||'Training Brief';
+  const notes=document.getElementById('em-notes')?.value||'';
+  const secN=(allSec.find(s=>String(s.id)===String(r.sector_id))||{}).Name||'—';
+  const typeLabels={'online':'VISIO','presential-internal':'Presential — internal','presential-client':'Presential — client'};
+  const ttLabel=typeLabels[r.training_type]||'—';
+  let locationLine='';
+  if(r.training_type==='online'&&r.visio_link)locationLine=`Visio Link: ${r.visio_link}`;
+  else if(r.training_type==='presential-internal'&&r.internal_address)locationLine=`Venue: ${r.internal_address}`;
+  else if(r.training_type==='presential-client'&&r.client_address)locationLine=`Venue: ${r.client_address}`;
+  const trainingDate=r.online_date||r.internal_date||r.client_date||'';
+  const trainingTime=trimTime(r.online_time||r.internal_time||r.client_time||'');
+  // Build planning text
+  let planText='';
+  const sd=document.getElementById('em-sd')?.value;
+  const ed=document.getElementById('em-ed')?.value;
+  if(sd&&ed){
+    const vs=_emailShifts.filter(s=>s.from&&s.to);
+    const DAYS=['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+    const days=[];let cur=new Date(sd);const end=new Date(ed);
+    while(cur<=end){const dow=cur.getDay();days.push({dow,day:cur.getDate(),month:cur.getMonth()+1,year:cur.getFullYear(),name:DAYS[dow]});cur.setDate(cur.getDate()+1);}
+    let totalH=0;
+    const rows=days.map(d=>{
+      const shiftLines=vs.map((s,i)=>{
+        if(!(s.days||[0,1,2,3,4,5,6]).includes(d.dow))return null;
+        const net=Math.max(0,emCalcH(s.from,s.to)-((s.breakMin??60)/60));totalH+=net;
+        return`  Shift ${i+1}: ${s.from} - ${s.to} (${Math.round(net*10)/10}h)`;
+      }).filter(Boolean);
+      if(!shiftLines.length)return null;
+      return`${d.name} ${String(d.day).padStart(2,'0')}/${String(d.month).padStart(2,'0')}/${d.year}\n${shiftLines.join('\n')}`;
+    }).filter(Boolean).join('\n');
+    totalH=Math.round(totalH*10)/10;
+    planText=`\n\nPLANNING\n${'─'.repeat(56)}\n${rows}\n${'─'.repeat(56)}\nTotal: ${totalH}h net`;
+  }
+  const body=`Hello,\n\nPlease find below the training brief for your upcoming session.\n\n${'─'.repeat(56)}\n${r.mission_name||'Training'}\n${'─'.repeat(56)}\n\nClient: ${r.client||'—'}\nBrand: ${r.brand||'—'}\n${r.codeaffaire?'SAP Code: '+r.codeaffaire+'\n':''}${r.gi_mission_id?'GI Mission ID: '+r.gi_mission_id+'\n':''}Sector / Store: ${secN} / ${r.store||'—'}\nDates: ${fd(r.startdate)} → ${fd(r.enddate)}\n\nTRAINING DETAILS\n${'─'.repeat(56)}\nType: ${ttLabel}\n${trainingDate?'Date: '+fd(trainingDate)+(trainingTime?' at '+trainingTime:'')+'\n':''}${r.training_hours?'Duration: '+r.training_hours+'\n':''}${planText}${notes?'\n\nADDITIONAL NOTES\n'+'─'.repeat(56)+'\n'+notes:''}\n\n${'─'.repeat(56)}\nSent from ConfDope Training\n${'─'.repeat(56)}`;
+  document.getElementById('emailModal')?.remove();
+  markEmailSent(_emailRec.id);
+  window.location.href=`mailto:${encodeURIComponent(to)}?subject=${encodeURIComponent(subj)}&body=${encodeURIComponent(body)}`;
+}
+// ─────────────────────────────────────────────────────────────────────────────
+
+// Global store for URLs/text used in inline onclick handlers
+const _store={};let _storeIdx=0;
+function _reg(v){const k='s'+(_storeIdx++);_store[k]=v;return k;}
+function openUrl(k){if(!_store[k])return;let url=_store[k];if(!/^https?:\/\//i.test(url))url='https://'+url;window.open(url,'_blank');}
+function copyText(k){if(_store[k])navigator.clipboard.writeText(_store[k]).then(()=>toast('Copied!','success'));}
+
+init();
+</script>
+</body>
+</html>
